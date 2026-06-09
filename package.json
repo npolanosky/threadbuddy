@@ -1,7 +1,7 @@
 {
-  "name": "threadpal-web",
+  "name": "threadbuddy",
   "version": "0.1.0",
-  "description": "A cross-platform, open reimplementation of ME ThreadPal — comprehensive screw-thread dimension calculator for machining.",
+  "description": "ThreadBuddy — a cross-platform, open screw-thread dimension calculator for machining (clean-room reimplementation inspired by ME ThreadPal).",
   "type": "module",
   "license": "MIT",
   "scripts": {

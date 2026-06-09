@@ -1,8 +1,8 @@
-# ThreadPal Web
+# ThreadBuddy
 
-An open, cross-platform, install-free **screw-thread dimension calculator** — a clean-room
-reimplementation of the much-loved Windows program **ME ThreadPal** (Michael Rainey / Close
-Tolerance Software), which is now archived under a
+An open, cross-platform, install-free **screw-thread dimension calculator** for machining.
+ThreadBuddy is a clean-room reimplementation inspired by the much-loved Windows program
+**ME ThreadPal** (Michael Rainey / Close Tolerance Software), which is now archived under a
 [Public Domain Mark](https://archive.org/details/methread-pal-setup).
 
 It runs in any modern browser (desktop or mobile), needs no installation, and deploys as static

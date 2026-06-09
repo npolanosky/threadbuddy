@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Threadpal-Web contributors
+Copyright (c) 2026 ThreadBuddy contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@ SOFTWARE.
 
 NOTE ON THREAD DATA AND THE MIT LICENSE
 
-This MIT license covers the original source code of Threadpal-Web. The screw
+This MIT license covers the original source code of ThreadBuddy. The screw
 thread dimensions and formulas this software computes are facts derived from
 public engineering standards (ASME, ISO, DIN, BS, SAE) and are not themselves
 subject to copyright. See PROVENANCE.md for data sources and methodology.

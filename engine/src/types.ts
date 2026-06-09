@@ -1,5 +1,5 @@
 /**
- * Core type definitions for the Threadpal-Web calculation engine.
+ * Core type definitions for the ThreadBuddy calculation engine.
  *
  * All linear dimensions inside the engine are carried in the thread's NATIVE unit
  * (inches for inch-series threads, millimetres for metric threads). Unit conversion

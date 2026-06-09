@@ -8,7 +8,7 @@ data calculator. Its author has passed away, the company website has lapsed, and
 program is now archived on the Internet Archive under a **Public Domain Mark 1.0**. It runs
 only on Windows and increasingly suffers compatibility issues on modern systems.
 
-Threadpal-Web is a **clean-room reimplementation** that recreates ME ThreadPal's
+ThreadBuddy is a **clean-room reimplementation** that recreates ME ThreadPal's
 *functionality and data* as a cross-platform, install-free web app, so this resource stays
 available to machinists on any OS. We gratefully acknowledge Michael Rainey's original work.
 

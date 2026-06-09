@@ -1,5 +1,5 @@
 /**
- * ThreadPal Web — UI controller.
+ * ThreadBuddy — UI controller.
  * Reads control state, calls the engine, and renders the dashboard (External/Internal dimensions,
  * MOW, tap-drill table, coating) reproducing the layout of the original ME ThreadPal.
  */

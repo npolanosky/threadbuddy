@@ -1,5 +1,5 @@
 /**
- * Public entry point for the Threadpal-Web calculation engine.
+ * Public entry point for the ThreadBuddy calculation engine.
  */
 
 import type { ThreadInput, ThreadResult } from "./types.js";
