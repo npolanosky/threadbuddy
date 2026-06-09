@@ -6,6 +6,10 @@ import { defineConfig } from "vite";
 export default defineConfig({
   root: "web",
   base: "./",
+  server: {
+    // Allow importing the engine source which lives outside the web/ root.
+    fs: { allow: [".."] },
+  },
   build: {
     outDir: "../docs",
     emptyOutDir: true,

@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "PowerShell(Add-Type -AssemblyName System.IO.Compression.FileSystem; $zip = [System.IO.Compression.ZipFile]::OpenRead\\(\"N:\\\\LocalDownloads\\\\ME ThreadPal.zip\"\\); $zip.Entries | Select-Object FullName,Length,CompressedLength | Format-Table -AutoSize; $zip.Dispose\\(\\))"
-    ]
-  }
-}

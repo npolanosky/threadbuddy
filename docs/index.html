@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ThreadPal Web — Screw Thread Calculator</title>
+    <script type="module" crossorigin src="./assets/index-C_ewILjA.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-VGYdX-a6.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>ThreadPal <span>Web</span></h1>
+      <p class="tagline">
+        Open, cross-platform screw-thread dimension calculator · a clean-room reimplementation of
+        ME&nbsp;ThreadPal
+      </p>
+    </header>
+
+    <main class="dashboard">
+      <!-- Controls -->
+      <section class="panel control" id="panel-input">
+        <h2>Thread Type &amp; Size</h2>
+        <label class="field">
+          <span>Thread type</span>
+          <select id="family"></select>
+        </label>
+        <label class="field">
+          <span>Standard size</span>
+          <select id="size"></select>
+        </label>
+        <div class="custom-grid">
+          <label class="field">
+            <span id="majorLabel">Major (in)</span>
+            <input id="major" type="number" step="any" />
+          </label>
+          <label class="field" id="tpiField">
+            <span>TPI</span>
+            <input id="tpi" type="number" step="any" />
+          </label>
+          <label class="field hidden" id="pitchField">
+            <span>Pitch (mm)</span>
+            <input id="pitch" type="number" step="any" />
+          </label>
+        </div>
+        <div class="radio-row" id="variantRow"></div>
+      </section>
+
+      <section class="panel control" id="panel-class">
+        <h2>Classes of Fit</h2>
+        <label class="field">
+          <span>External</span>
+          <select id="classExternal"></select>
+        </label>
+        <label class="field">
+          <span>Internal</span>
+          <select id="classInternal"></select>
+        </label>
+        <div class="radio-row">
+          <label><input type="radio" name="hand" value="external" checked /> External</label>
+          <label><input type="radio" name="hand" value="internal" /> Internal</label>
+        </div>
+      </section>
+
+      <section class="panel control" id="panel-starts">
+        <h2>Starts · Pitch · Lead</h2>
+        <div class="custom-grid">
+          <label class="field"><span>Starts</span><input id="starts" type="number" min="1" step="1" value="1" /></label>
+          <div class="field"><span>Pitch</span><output id="o-pitch">—</output></div>
+          <div class="field"><span>Lead</span><output id="o-lead">—</output></div>
+          <div class="field"><span id="angleLabel">Lead angle</span><output id="o-leadangle">—</output></div>
+        </div>
+        <label class="field">
+          <span>Length of engagement</span>
+          <input id="loe" type="number" step="any" placeholder="default = major dia" />
+        </label>
+      </section>
+
+      <section class="panel control" id="panel-display">
+        <h2>Display Options</h2>
+        <div class="radio-row">
+          <label><input type="radio" name="units" value="inch" checked /> Inch</label>
+          <label><input type="radio" name="units" value="metric" /> Metric</label>
+        </div>
+        <div class="radio-row">
+          <label><input type="radio" name="anglename" value="lead" checked /> Lead angle</label>
+          <label><input type="radio" name="anglename" value="helix" /> Helix angle</label>
+        </div>
+        <button id="printBtn" type="button" class="btn">Print report</button>
+      </section>
+
+      <!-- Results -->
+      <section class="panel result" id="panel-external">
+        <h2>External Dimensions <span class="desig" id="desig-ext">—</span></h2>
+        <div class="dim-row"><span class="dim-name">Allowance</span><output id="ext-allow">—</output></div>
+        <table class="dim-table">
+          <thead><tr><th></th><th>Max</th><th>Min</th><th>Tol / Mean</th></tr></thead>
+          <tbody>
+            <tr><th>Major dia</th><td id="ext-maj-max">—</td><td id="ext-maj-min">—</td><td id="ext-maj-x">—</td></tr>
+            <tr><th>Pitch dia</th><td id="ext-pd-max">—</td><td id="ext-pd-min">—</td><td id="ext-pd-x">—</td></tr>
+            <tr><th>Minor dia</th><td id="ext-min-max">—</td><td id="ext-min-min">—</td><td id="ext-min-x">—</td></tr>
+          </tbody>
+        </table>
+        <div class="dim-row"><span class="dim-name">Thread height (basic)</span><output id="ext-height">—</output></div>
+      </section>
+
+      <section class="panel result" id="panel-internal">
+        <h2>Internal Dimensions <span class="desig" id="desig-int">—</span></h2>
+        <table class="dim-table">
+          <thead><tr><th></th><th>Min</th><th>Max</th><th>Tol</th></tr></thead>
+          <tbody>
+            <tr><th>Minor dia</th><td id="int-min-min">—</td><td id="int-min-max">—</td><td id="int-min-x">—</td></tr>
+            <tr><th>Pitch dia</th><td id="int-pd-min">—</td><td id="int-pd-max">—</td><td id="int-pd-x">—</td></tr>
+            <tr><th>Major dia</th><td id="int-maj-min">—</td><td id="int-maj-max">—</td><td></td></tr>
+          </tbody>
+        </table>
+        <div class="dim-row"><span class="dim-name">Tap drill (~75%)</span><output id="int-tap">—</output></div>
+      </section>
+
+      <section class="panel result" id="panel-mow">
+        <h2>Measurement Over Wires (3-wire)</h2>
+        <div class="dim-row"><span class="dim-name">MOW max / min</span><output id="mow-limits">—</output></div>
+        <table class="dim-table compact">
+          <tbody>
+            <tr><th>Wire — best</th><td id="wire-best">—</td></tr>
+            <tr><th>Wire — max / min</th><td id="wire-maxmin">—</td></tr>
+            <tr><th>Constant (best)</th><td id="wire-const">—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel result" id="panel-notes">
+        <h2>Notes &amp; Provenance</h2>
+        <ul id="notes"></ul>
+        <p class="src" id="standard-src">—</p>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        Data &amp; formulas from public standards (ASME B1.1, ISO 965, ASME B1.5, …). Clean-room
+        reimplementation of ME&nbsp;ThreadPal by Michael Rainey — gratefully acknowledged. See
+        PROVENANCE.md. This is an early draft; verify critical values against the governing standard.
+      </p>
+    </footer>
+
+  </body>
+</html>

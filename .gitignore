@@ -12,6 +12,7 @@ reference/
 # Editor / OS
 .vscode/
 .idea/
+.claude/settings.local.json
 .DS_Store
 Thumbs.db
 
