@@ -171,8 +171,8 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("ext-rr-min", fmt(rExt.rootRadius?.min));
     setText("ext-height", fmt(rExt.threadHeight));
     renderWires(rExt);
-    renderCoating(rExt);
   }
+  renderCoating(rExt, rInt);
   if (rInt) {
     setText("desig-int", rInt.designation);
     setText("int-min-min", fmt(rInt.minorDiameter.internal?.min));
@@ -233,15 +233,18 @@ function renderTapDrill(r: ThreadResult): void {
   if (!r.tapDrillInfo) tbody.innerHTML = `<tr><td colspan="3">—</td></tr>`;
 }
 
-function renderCoating(rExt: ThreadResult): void {
+function renderCoating(rExt: ThreadResult | null, rInt: ThreadResult | null): void {
   const thk = parseFloat($<HTMLInputElement>("coatThk").value);
   const ids = ["coat-maj-bmax", "coat-maj-bmin", "coat-maj-amax", "coat-maj-amin",
     "coat-pd-bmax", "coat-pd-bmin", "coat-pd-amax", "coat-pd-amin"];
-  if (!Number.isFinite(thk) || thk <= 0 || !rExt.majorDiameter.external) {
+  const hand = radio("coatHand") as "external" | "internal";
+  const r = hand === "external" ? rExt : rInt;
+  const present = hand === "external" ? r?.majorDiameter.external : r?.majorDiameter.internal;
+  if (!r || !Number.isFinite(thk) || thk <= 0 || !present) {
     ids.forEach((id) => setText(id, "—"));
     return;
   }
-  const c = calculateCoating({ result: rExt, hand: "external", thickness: thk, mode: radio("coatMode") as "coating" | "polishing" });
+  const c = calculateCoating({ result: r, hand, thickness: thk, mode: radio("coatMode") as "coating" | "polishing" });
   setText("coat-maj-bmax", fmt(c.before.major.max)); setText("coat-maj-bmin", fmt(c.before.major.min));
   setText("coat-maj-amax", fmt(c.after.major.max)); setText("coat-maj-amin", fmt(c.after.major.min));
   setText("coat-pd-bmax", fmt(c.before.pitch.max)); setText("coat-pd-bmin", fmt(c.before.pitch.min));
@@ -310,7 +313,7 @@ function init(): void {
       recompute();
     }));
   ["classExternal", "classInternal"].forEach((id) => $(id).addEventListener("change", recompute));
-  document.querySelectorAll('input[name="units"],input[name="anglename"],input[name="tapType"],input[name="coatMode"],#sharpRoot')
+  document.querySelectorAll('input[name="units"],input[name="anglename"],input[name="tapType"],input[name="coatMode"],input[name="coatHand"],#sharpRoot')
     .forEach((el) => el.addEventListener("change", recompute));
   $("resetWire").addEventListener("click", () => { $<HTMLInputElement>("altWire").value = ""; recompute(); });
   $("printBtn").addEventListener("click", () => window.print());
