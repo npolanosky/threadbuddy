@@ -62,9 +62,24 @@ body {
 }
 .desig { font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--accent); font-size: 13px; }
 
-/* span result panels two-wide */
-#panel-external, #panel-internal { grid-column: span 2; }
-#panel-mow, #panel-notes { grid-column: span 2; }
+.span1 { grid-column: span 1; }
+.span2 { grid-column: span 2; }
+.span3 { grid-column: span 3; }
+.tall { grid-row: span 1; }
+
+.mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
+.mini-grid > div { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
+.mini-grid span { font-weight: 600; }
+.mini-grid output {
+  background: var(--value-bg); border: 1px solid var(--value-border); border-radius: 4px;
+  padding: 3px 6px; font-variant-numeric: tabular-nums; text-align: right;
+}
+.check { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin: 6px 0; }
+.field.inline { flex-direction: row; align-items: center; justify-content: space-between; }
+.field.inline input { max-width: 90px; }
+.drill-table td { font-size: 12px; }
+.good-row td { background: #d7e8cf; font-weight: 600; }
+.btn.small { padding: 4px 8px; font-size: 12px; }
 
 .field { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; font-size: 12px; }
 .field > span { font-weight: 600; }
@@ -149,11 +164,13 @@ body {
 
 @media (max-width: 1080px) {
   .dashboard { grid-template-columns: repeat(2, 1fr); }
-  #panel-external, #panel-internal, #panel-mow, #panel-notes { grid-column: span 2; }
+  .span3 { grid-column: span 2; }
+  .span2 { grid-column: span 2; }
+  .span1 { grid-column: span 1; }
 }
 @media (max-width: 640px) {
   .dashboard { grid-template-columns: 1fr; }
-  #panel-external, #panel-internal, #panel-mow, #panel-notes { grid-column: span 1; }
+  .span1, .span2, .span3 { grid-column: span 1; }
 }
 
 @media print {

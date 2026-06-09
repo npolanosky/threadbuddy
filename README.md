@@ -49,29 +49,40 @@ primary proof the formulas match the standard. 157 tests pass.
 |---|---|---|---|---|---|
 | UN / UNC / UNF / UNEF / UNS | ASME B1.1-2003 | ✅ exact | ✅ validated (PD, major, allowance) | 69 | **Validated** |
 | UNR (rounded root) | ASME B1.1-2003 | ✅ | ✅ (shares UN) | (UN) | Validated |
-| UNJ | SAE AS8879C | ⚠️ via UN basis | ⚠️ approximate | — | Provisional |
+| UNJ | SAE AS8879C | ✅ via UN basis | ⚠️ approximate | — | Partial |
 | Metric M / MS | ISO 965 / B1.13M | ✅ exact | ⚠️ computed (±~1 µm vs ISO R40 table) | 43 | Partial |
-| Metric MJ | ASME B1.21M / ISO 5855 | ⚠️ via M basis | ⚠️ approximate | — | Provisional |
+| Metric MJ | ASME B1.21M / ISO 5855 | ✅ via M basis | ⚠️ approximate | — | Partial |
 | Acme GP / Centralizing / Stub | ASME B1.5-1997 | ✅ exact | ⚠️ provisional | 21 | Partial |
-| UNM, STI, Pg conduit | B1.10 / mfr / DIN 40430 | ⚠️ routed to nearest engine | ⚠️ | — | Provisional |
-| Whitworth (BSW/BSF) | BS 84:1956 | ⬜ planned | ⬜ | — | Not yet |
-| US Buttress 7×45 | ASME B1.9 | ⬜ planned | ⬜ | — | Not yet |
-| ISO Trapezoidal | ISO 2901 | ⬜ planned | ⬜ | — | Not yet |
-| ISO Buttress 3×30 | DIN 513 | ⬜ planned | ⬜ | — | Not yet |
-| NPT / NPTF / NPSM / NPSL | ASME B1.20.1 | ⬜ planned | ⬜ | — | Not yet |
-| BSPT / BSPP | ISO 7-1 | ⬜ planned | ⬜ | — | Not yet |
+| Whitworth (BSW/BSF) | BS 84:1956 | ✅ exact | ⚠️ provisional | 38 | Partial |
+| ISO Trapezoidal | ISO 2901 | ✅ exact | ⚠️ provisional | 14 | Partial |
+| US Buttress 7×45 / ISO 3×30 | ASME B1.9 / DIN 513 | ⚠️ approximate | ⚠️ provisional | 8 | Provisional |
+| NPT / NPTF (taper) | ASME B1.20.1 | ✅ B1.20.1 formulas | ⚠️ gauge-based, provisional | 26 | Partial |
+| NPSM / NPSL (straight) | ASME B1.20.1 | ✅ | ⚠️ provisional | 26 | Partial |
+| BSPT / BSPP | ISO 7-1 | ✅ 55° form | ⚠️ provisional | 22 | Partial |
+| UNM (miniature) | ASME B1.10 | ✅ (mm) | ⚠️ provisional | 14 | Partial |
+| STI Unified / Metric | mfr reference | ✅ base series | ⬜ insert oversize pending | — | Provisional |
+| Pg conduit | DIN 40430 | ✅ (mm) | ⚠️ provisional | 8 | Partial |
 
 Legend: ✅ exact/validated · ⚠️ implemented, not yet table-validated (flagged in the app's Notes
-panel) · ⬜ planned. Nothing provisional is presented as if it were validated.
+panel) · ⬜ pending. Nothing provisional is presented as if it were validated. ~290 catalog sizes.
+
+### Features
+
+External/Internal dimension tables (max/min/mean/tol), flat-at-root & root-radius, **sharp-root**
+toggle, allowance, basic thread height; **measurement over wires** (best/max/min wire, constant,
+MOW limits) with **user alternate-wire** recompute; **starts / pitch / lead / lead-or-helix angle**;
+length-of-engagement; **tap drills** with cut/form-tap selector, **thread-percent** selector and a
+nearest-standard-drill table (number/letter/fractional/metric) showing resulting % thread; a
+**coating / polishing** panel (before/after major & pitch, 4× rule); inch/metric display; print.
 
 ## Roadmap to full parity with ME ThreadPal
 
 1. Encode ISO 965 R40 tolerance tables so metric limits are exact (not ±1 µm).
 2. Full ASME B1.5 Acme tolerance tables + reconcile the documented lead-angle convention.
-3. Add the remaining families (pipe threads, Whitworth, buttress, trapezoidal, miniature, STI).
-4. Internal minor-diameter tolerance per ASME B1.1; UNR root radius; UNJ controlled root radius.
-5. Coating/plating allowances, percent-thread/tap-drill chart, CSV export, terminology popups.
-6. Designation polish (UNC/UNF series labels), printable report styling.
+3. Per-standard tolerance tables for the families now shipping with provisional tolerances
+   (Whitworth, Trapezoidal, Buttress, pipe gauge limits).
+4. Internal minor-diameter tolerance per ASME B1.1; UNJ controlled root radius; STI insert oversize.
+5. CSV/clipboard export, terminology graphic popups, designation polish (UNC/UNF series labels).
 
 ## Acknowledgement
 
