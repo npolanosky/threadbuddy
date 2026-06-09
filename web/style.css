@@ -18,7 +18,7 @@ body {
   margin: 0;
   font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
   background: #e9ece4;
-  color: var(--ink);
+  color: #000;
   font-size: 14px;
 }
 
@@ -32,12 +32,22 @@ body {
 .tagline { margin: 4px 0 0; font-size: 12.5px; color: #c7d6c1; }
 
 .dashboard {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   padding: 16px;
   max-width: 1280px;
   margin: 0 auto;
+}
+
+/* Results: External then Internal, full width, stacked tightly (like the original).
+   Everything else lives in the uniform controls grid below — no dead vertical space. */
+.results { display: flex; flex-direction: column; gap: 12px; }
+
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
   align-items: start;
 }
 
@@ -60,12 +70,9 @@ body {
   align-items: baseline;
   gap: 8px;
 }
-.desig { font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--accent); font-size: 13px; }
+.desig { font-weight: 700; text-transform: none; letter-spacing: 0; color: #000; font-size: 13px; }
 
-.span1 { grid-column: span 1; }
 .span2 { grid-column: span 2; }
-.span3 { grid-column: span 3; }
-.tall { grid-row: span 1; }
 
 .mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
 .mini-grid > div { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
@@ -138,7 +145,7 @@ body {
   font-variant-numeric: tabular-nums;
   font-size: 12.5px;
 }
-.dim-table thead th { color: var(--accent); font-size: 11px; text-transform: uppercase; }
+.dim-table thead th { color: #000; font-size: 11px; text-transform: uppercase; font-weight: 700; }
 .dim-table tbody th { text-align: left; font-weight: 600; }
 .dim-table td {
   background: var(--value-bg);
@@ -149,28 +156,25 @@ body {
 
 #notes { margin: 0; padding-left: 18px; font-size: 12px; }
 #notes li { margin: 3px 0; }
-.src { font-size: 11.5px; color: #4a5a48; margin: 8px 0 0; }
+.src { font-size: 11.5px; color: #000; margin: 8px 0 0; }
 
 .app-footer {
   max-width: 1280px;
   margin: 0 auto;
   padding: 8px 22px 28px;
   font-size: 11.5px;
-  color: #4a5a48;
+  color: #000;
 }
 
 .hidden { display: none !important; }
 .warn output, output.warn { color: #b3261e; font-weight: 700; }
 
 @media (max-width: 1080px) {
-  .dashboard { grid-template-columns: repeat(2, 1fr); }
-  .span3 { grid-column: span 2; }
-  .span2 { grid-column: span 2; }
-  .span1 { grid-column: span 1; }
+  .controls-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .dashboard { grid-template-columns: 1fr; }
-  .span1, .span2, .span3 { grid-column: span 1; }
+  .controls-grid { grid-template-columns: 1fr; }
+  .span2 { grid-column: span 1; }
 }
 
 @media print {
