@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Reference material (clean-room hygiene: original binaries, decompiled help, screenshots)
+# Facts/formulas are extracted into cited source; the originals themselves are not committed.
+reference/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local downloads / archives
+*.zip
+*.exe
