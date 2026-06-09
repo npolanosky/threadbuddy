@@ -20,6 +20,7 @@ import {
   measurementOverWires,
   wireConstant,
 } from "./geometry.js";
+import { alternateWire } from "./features.js";
 
 const ACME_ANGLE = 29;
 
@@ -67,6 +68,7 @@ export function deriveAcme(input: ThreadInput): ThreadResult {
   if (external && pitchDiameter.external) {
     const w = bestWire(p, ACME_ANGLE);
     const e = pitchDiameter.external;
+    const majMax = majorDiameter.external?.max ?? D;
     wires = {
       bestWire: roundInch(w),
       minWire: roundInch(0.4872 * p),
@@ -77,6 +79,9 @@ export function deriveAcme(input: ThreadInput): ThreadResult {
         min: roundInch(measurementOverWires(e.min, w, p, ACME_ANGLE)),
       },
     };
+    if (input.alternateWire) {
+      wires.alternate = alternateWire(e, input.alternateWire, p, ACME_ANGLE, majMax, roundInch);
+    }
   }
 
   const lead = starts * p;
@@ -102,6 +107,7 @@ export function deriveAcme(input: ThreadInput): ThreadResult {
     majorDiameter,
     pitchDiameter,
     minorDiameter,
+    flatAtRoot: { external: roundInch(0.3707 * p), internal: roundInch(0.3707 * p) },
     wires,
     notes,
   };

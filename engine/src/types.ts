@@ -58,6 +58,14 @@ export interface ThreadInput {
   lengthOfEngagement?: number;
   /** Number of thread starts for multi-start lead/helix calculations. Default 1. */
   starts?: number;
+  /** Sharp (un-truncated) root: removes the flat at root, deepening the minor diameter. */
+  sharpRoot?: boolean;
+  /** Target percent of thread for tap-drill selection (default 75). */
+  targetPercent?: number;
+  /** Tap style for tap-drill selection. */
+  tapType?: "cut" | "form";
+  /** User-supplied alternate measuring-wire diameter (native units). */
+  alternateWire?: number;
 }
 
 /** Result of a single feature's basic + limit dimensions. */
@@ -76,6 +84,36 @@ export interface WireResult {
   mow: Limits;
   /** Single-wire measurement constant C, where MOW = E + C (C depends on wire size). */
   constantBest: number;
+  /** Results for a user-supplied alternate wire diameter, if provided. */
+  alternate?: {
+    wire: number;
+    constant: number;
+    mow: Limits;
+    /** True if the alternate MOW falls below the major diameter (warning condition). */
+    belowMajor: boolean;
+  };
+}
+
+/** A candidate drill for a tap-drill table. */
+export interface DrillCandidate {
+  /** Display name, e.g. "27/64", "#7", "Q", "8.5 mm". */
+  name: string;
+  /** Decimal diameter in inches. */
+  inch: number;
+  /** Diameter in millimetres. */
+  mm: number;
+  /** Resulting percent of thread when used for this internal thread. */
+  percent: number;
+}
+
+/** Tap-drill recommendation for an internal thread. */
+export interface TapDrillInfo {
+  tapType: "cut" | "form";
+  targetPercent: number;
+  /** Theoretical hole diameter (native units) for the target percent. */
+  theoretical: number;
+  /** Nearest standard drills around the theoretical hole, with resulting percent. */
+  candidates: DrillCandidate[];
 }
 
 /** Full calculation result for a thread. */
@@ -100,10 +138,37 @@ export interface ThreadResult {
   majorDiameter: FeatureDimensions;
   pitchDiameter: FeatureDimensions;
   minorDiameter: FeatureDimensions;
+  /** Flat width at the thread root (native units), if the form defines one. */
+  flatAtRoot?: { external?: number; internal?: number };
+  /** Root radius limits (native units) for rounded-root forms. */
+  rootRadius?: Limits;
   wires?: WireResult;
   /** Recommended tap drill diameter for the internal thread, if applicable. */
   tapDrill?: number;
+  /** Detailed tap-drill recommendation with a table of candidate drills. */
+  tapDrillInfo?: TapDrillInfo;
   /** Non-fatal notes (e.g. "special size", validation hints). */
+  notes: string[];
+}
+
+// ---- Coating / polishing ----
+
+export interface CoatingInput {
+  result: ThreadResult;
+  hand: ThreadHand;
+  /** Radial coating thickness per surface (native units). Positive adds material. */
+  thickness: number;
+  /** "coating" adds material; "polishing" removes it. */
+  mode: "coating" | "polishing";
+}
+
+export interface CoatingResult {
+  /** Pitch-diameter change applied (4x thickness for 60-degree threads). */
+  pitchDiameterDelta: number;
+  /** Major-diameter change applied (2x thickness). */
+  majorDiameterDelta: number;
+  before: { major: Limits; pitch: Limits };
+  after: { major: Limits; pitch: Limits };
   notes: string[];
 }
 

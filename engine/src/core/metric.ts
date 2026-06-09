@@ -23,10 +23,12 @@ import {
   WIRE_MAX_FACTOR_60,
   WIRE_MIN_FACTOR_60,
 } from "./geometry.js";
+import { buildTapDrillInfo, alternateWire } from "./features.js";
 
 const PD_COEFF = 0.6495190528; // pitch dia  = D - 0.649519 P
 const MINOR_INT_COEFF = 1.0825317547; // internal minor D1 = D - 1.082532 P
 const MINOR_EXT_COEFF = 1.2268699; // external minor d3 (rounded root) = D - 1.226870 P
+const MINOR_EXT_SHARP = 1.7320508076; // sharp external minor = D - 2H
 
 /** Round a value in micrometres to the nearest whole µm and return millimetres (ISO 965-1). */
 const umToMm = (um: number): number => Math.round(um) / 1000;
@@ -103,10 +105,11 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
   const starts = input.starts ?? 1;
   const { grade, position, external } = parseMetricClass(input.classOfFit);
 
+  const sharp = input.sharpRoot ?? false;
   const H = fundamentalHeight(P, 60);
   const basicPitch = D - PD_COEFF * P;
   const basicMinorInternal = D - MINOR_INT_COEFF * P;
-  const basicMinorExternal = D - MINOR_EXT_COEFF * P;
+  const basicMinorExternal = D - (sharp ? MINOR_EXT_SHARP : MINOR_EXT_COEFF) * P;
 
   const majorDiameter: ThreadResult["majorDiameter"] = { basic: roundMetric(D) };
   const pitchDiameter: ThreadResult["pitchDiameter"] = { basic: roundMetric(basicPitch) };
@@ -143,6 +146,7 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
   if (external && pitchDiameter.external) {
     const w = bestWire(P, 60);
     const e = pitchDiameter.external;
+    const majMax = majorDiameter.external?.max ?? D;
     wires = {
       bestWire: roundMetric(w),
       minWire: roundMetric(WIRE_MIN_FACTOR_60 * P),
@@ -153,11 +157,19 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
         min: roundMetric(measurementOverWires(e.min, w, P, 60)),
       },
     };
+    if (input.alternateWire) {
+      wires.alternate = alternateWire(e, input.alternateWire, P, 60, majMax, roundMetric);
+    }
   }
 
   const lead = starts * P;
   const la = leadAngleDeg(lead, basicPitch);
-  const tapDrill = roundMetric(D - P); // common rule of thumb for ~standard fit (D - P)
+  const tapType = input.tapType ?? "cut";
+  const targetPercent = input.targetPercent ?? 75;
+  const tapDrillInfo = !external ? buildTapDrillInfo(D, P, "metric", targetPercent, tapType) : undefined;
+  // Root flat / radius for the ISO metric form (rounded external root).
+  const flatAtRoot = { external: sharp ? 0 : roundMetric(P / 8), internal: sharp ? 0 : roundMetric(P / 4) };
+  const rootRadius = { max: roundMetric(0.14434 * P), min: roundMetric(0.125 * P) };
 
   const startTag = starts > 1 ? ` (${starts}-start)` : "";
   return {
@@ -178,8 +190,11 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
     majorDiameter,
     pitchDiameter,
     minorDiameter,
+    flatAtRoot,
+    rootRadius,
     wires,
-    tapDrill: external ? undefined : tapDrill,
+    tapDrill: tapDrillInfo ? roundMetric(tapDrillInfo.theoretical) : undefined,
+    tapDrillInfo,
     notes,
   };
 }

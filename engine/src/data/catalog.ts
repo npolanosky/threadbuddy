@@ -92,6 +92,66 @@ const ACME_GP: Array<[string, number, number]> = [
   ["3-2", 3.0, 2], ["3 1/2-2", 3.5, 2], ["4-2", 4.0, 2],
 ];
 
+// ---- Whitworth BSW (coarse) — BS 84 ----
+const BSW: Array<[string, number, number]> = [
+  ["1/8-40", 0.125, 40], ["3/16-24", 0.1875, 24], ["1/4-20", 0.25, 20],
+  ["5/16-18", 0.3125, 18], ["3/8-16", 0.375, 16], ["7/16-14", 0.4375, 14],
+  ["1/2-12", 0.5, 12], ["9/16-12", 0.5625, 12], ["5/8-11", 0.625, 11],
+  ["3/4-10", 0.75, 10], ["7/8-9", 0.875, 9], ["1-8", 1.0, 8],
+  ["1 1/8-7", 1.125, 7], ["1 1/4-7", 1.25, 7], ["1 1/2-6", 1.5, 6], ["2-4.5", 2.0, 4.5],
+];
+
+// ---- Whitworth BSF (fine) — BS 84 ----
+const BSF: Array<[string, number, number]> = [
+  ["3/16-32", 0.1875, 32], ["1/4-26", 0.25, 26], ["5/16-22", 0.3125, 22],
+  ["3/8-20", 0.375, 20], ["7/16-18", 0.4375, 18], ["1/2-16", 0.5, 16],
+  ["9/16-16", 0.5625, 16], ["5/8-14", 0.625, 14], ["3/4-12", 0.75, 12],
+  ["7/8-11", 0.875, 11], ["1-10", 1.0, 10],
+];
+
+// ---- ISO Metric Trapezoidal Tr (D, pitch mm) — ISO 2901 ----
+const TRAP: Array<[string, number, number]> = [
+  ["Tr8×1.5", 8, 1.5], ["Tr10×2", 10, 2], ["Tr12×3", 12, 3], ["Tr16×4", 16, 4],
+  ["Tr20×4", 20, 4], ["Tr24×5", 24, 5], ["Tr28×5", 28, 5], ["Tr30×6", 30, 6],
+  ["Tr36×6", 36, 6], ["Tr40×7", 40, 7], ["Tr44×7", 44, 7], ["Tr48×8", 48, 8],
+  ["Tr60×9", 60, 9], ["Tr80×10", 80, 10],
+];
+
+// ---- US Buttress 7×45 — ASME B1.9 (D, TPI) ----
+const BUTTRESS_US: Array<[string, number, number]> = [
+  ["1/2-20", 0.5, 20], ["3/4-16", 0.75, 16], ["1-16", 1.0, 16], ["1 1/2-10", 1.5, 10],
+  ["2-8", 2.0, 8], ["3-6", 3.0, 6], ["4-6", 4.0, 6], ["6-4", 6.0, 4],
+];
+
+// ---- American pipe NPT/NPSM (nominal: OD, TPI) — ASME B1.20.1 ----
+const NPT_SIZES: Array<[string, number, number]> = [
+  ["1/16", 0.3125, 27], ["1/8", 0.405, 27], ["1/4", 0.54, 18], ["3/8", 0.675, 18],
+  ["1/2", 0.84, 14], ["3/4", 1.05, 14], ["1", 1.315, 11.5], ["1 1/4", 1.66, 11.5],
+  ["1 1/2", 1.9, 11.5], ["2", 2.375, 11.5], ["2 1/2", 2.875, 8], ["3", 3.5, 8], ["4", 4.5, 8],
+];
+
+// ---- ISO pipe BSPP/BSPT (nominal: OD, TPI) — ISO 7-1 ----
+const BSP_SIZES: Array<[string, number, number]> = [
+  ["1/8", 0.383, 28], ["1/4", 0.518, 19], ["3/8", 0.656, 19], ["1/2", 0.825, 14],
+  ["3/4", 1.041, 14], ["1", 1.309, 11], ["1 1/4", 1.65, 11], ["1 1/2", 1.882, 11],
+  ["2", 2.347, 11], ["2 1/2", 2.96, 11], ["3", 3.46, 11],
+];
+
+// ---- Unified Miniature UNM (mm: major, pitch) — ASME B1.10 ----
+const UNM_SIZES: Array<[string, number, number]> = [
+  ["0.30 UNM", 0.3, 0.08], ["0.35 UNM", 0.35, 0.09], ["0.40 UNM", 0.4, 0.1],
+  ["0.45 UNM", 0.45, 0.1], ["0.50 UNM", 0.5, 0.125], ["0.55 UNM", 0.55, 0.125],
+  ["0.60 UNM", 0.6, 0.15], ["0.70 UNM", 0.7, 0.175], ["0.80 UNM", 0.8, 0.2],
+  ["0.90 UNM", 0.9, 0.225], ["1.00 UNM", 1.0, 0.25], ["1.10 UNM", 1.1, 0.25],
+  ["1.20 UNM", 1.2, 0.25], ["1.40 UNM", 1.4, 0.3],
+];
+
+// ---- Metric conduit Pg (DIN 40430) (D, pitch mm) ----
+const PG_SIZES: Array<[string, number, number]> = [
+  ["Pg7", 12.5, 1.27], ["Pg9", 15.2, 1.41], ["Pg11", 18.6, 1.41], ["Pg13.5", 20.4, 1.41],
+  ["Pg16", 22.5, 1.41], ["Pg21", 28.3, 1.59], ["Pg29", 37.0, 1.59], ["Pg36", 47.0, 1.59],
+];
+
 function inchEntries(
   family: ThreadFamily,
   series: string,
@@ -107,12 +167,24 @@ function inchEntries(
 }
 
 function metricEntries(series: string, rows: Array<[string, number, number]>): CatalogEntry[] {
-  return rows.map(([label, majorDiameter, pitch]) => ({
-    family: "M" as ThreadFamily,
-    label,
+  return metricFamilyEntries("M", series, rows);
+}
+
+function metricFamilyEntries(
+  family: ThreadFamily,
+  series: string,
+  rows: Array<[string, number, number]>,
+): CatalogEntry[] {
+  return rows.map(([label, majorDiameter, pitch]) => ({ family, label, majorDiameter, pitch, series }));
+}
+
+function pipeEntries(family: ThreadFamily, prefix: string, rows: Array<[string, number, number]>): CatalogEntry[] {
+  return rows.map(([label, majorDiameter, tpi]) => ({
+    family,
+    label: `${prefix}${label}`,
     majorDiameter,
-    pitch,
-    series,
+    tpi,
+    series: prefix.trim(),
   }));
 }
 
@@ -129,6 +201,18 @@ export const CATALOG: CatalogEntry[] = [
     tpi,
     series: "GP",
   })),
+  ...inchEntries("WHITWORTH", "BSW", BSW),
+  ...inchEntries("WHITWORTH", "BSF", BSF),
+  ...metricFamilyEntries("TRAPEZOIDAL", "Tr", TRAP),
+  ...inchEntries("BUTTRESS", "7×45", BUTTRESS_US),
+  ...pipeEntries("NPT", "NPT ", NPT_SIZES),
+  ...pipeEntries("NPTF", "NPTF ", NPT_SIZES),
+  ...pipeEntries("NPSM", "NPSM ", NPT_SIZES),
+  ...pipeEntries("NPSL", "NPSL ", NPT_SIZES),
+  ...pipeEntries("BSPT", "R ", BSP_SIZES),
+  ...pipeEntries("BSPP", "G ", BSP_SIZES),
+  ...metricFamilyEntries("UNM", "UNM", UNM_SIZES),
+  ...metricFamilyEntries("PG_CONDUIT", "Pg", PG_SIZES),
 ];
 
 /** Catalog grouped by family for building UI dropdowns. */
