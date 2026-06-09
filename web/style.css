@@ -51,6 +51,17 @@ body {
   align-items: start;
 }
 
+/* Control-row order: Thread Type | Classes of Fit | Tap Drills | Measurement Over Wires,
+   then Starts, Display, Coating, Notes below. */
+#panel-input { order: 1; }
+#panel-class { order: 2; }
+#panel-tap { order: 3; }
+#panel-mow { order: 4; }
+#panel-starts { order: 5; }
+#panel-display { order: 6; }
+#panel-coating { order: 7; }
+#panel-notes { order: 8; }
+
 .panel {
   border-radius: 8px;
   padding: 12px;
