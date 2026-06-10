@@ -137,7 +137,7 @@ export function deriveUN(input: ThreadInput): ThreadResult {
     starts,
     lead,
     leadAngleDeg: la,
-    helixAngleDeg: la,
+    helixAngleDeg: 90 - la,
     fundamentalHeight: H,
     threadHeight: roundInch((isUNJ ? 0.5625 : 0.625) * H),
     allowance: external ? es : 0,

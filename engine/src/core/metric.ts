@@ -194,7 +194,7 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
     starts,
     lead,
     leadAngleDeg: la,
-    helixAngleDeg: la,
+    helixAngleDeg: 90 - la,
     fundamentalHeight: H,
     threadHeight: roundMetric((isMJ ? 0.5625 : 0.625) * H),
     allowance: external ? Math.abs(esExternal(position, P)) : 0,

@@ -100,7 +100,7 @@ export function deriveAcme(input: ThreadInput): ThreadResult {
     starts,
     lead,
     leadAngleDeg: la,
-    helixAngleDeg: la,
+    helixAngleDeg: 90 - la,
     fundamentalHeight: fundamentalHeight(p, ACME_ANGLE),
     threadHeight: roundInch(h),
     allowance: external ? allowance : 0,

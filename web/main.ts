@@ -221,7 +221,8 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
   setText("o-lead", fmt(src.lead));
   const useHelix = radio("anglename") === "helix";
   setText("angleLabel", useHelix ? "Helix angle" : "Lead angle");
-  setText("o-leadangle", Number.isFinite(src.leadAngleDeg) ? src.leadAngleDeg.toFixed(3) + "°" : "—");
+  const angVal = useHelix ? src.helixAngleDeg : src.leadAngleDeg;
+  setText("o-leadangle", Number.isFinite(angVal) ? angVal.toFixed(3) + "°" : "—");
 
   const notes = $("notes");
   notes.innerHTML = "";
@@ -445,3 +446,20 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch(() => {/* offline support is best-effort */});
   });
 }
+
+// "Install as desktop app" button — appears only when the browser offers PWA installation.
+let deferredInstall: any = null;
+const installBtn = document.getElementById("installBtn") as HTMLButtonElement | null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  if (installBtn) installBtn.hidden = false;
+});
+installBtn?.addEventListener("click", async () => {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  try { await deferredInstall.userChoice; } catch { /* user dismissed */ }
+  deferredInstall = null;
+  installBtn.hidden = true;
+});
+window.addEventListener("appinstalled", () => { if (installBtn) installBtn.hidden = true; });

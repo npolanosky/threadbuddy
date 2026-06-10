@@ -108,7 +108,7 @@ export function deriveGeneric(input: ThreadInput): ThreadResult {
     starts,
     lead,
     leadAngleDeg: la,
-    helixAngleDeg: la,
+    helixAngleDeg: 90 - la,
     fundamentalHeight: H,
     threadHeight: round(cfg.depthCoeff * p),
     allowance: 0,

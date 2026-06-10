@@ -8,8 +8,8 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <meta name="theme-color" content="#2f4a2e" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
-    <script type="module" crossorigin src="./assets/index-lmu8h3S5.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-C4PH2Nhr.css">
+    <script type="module" crossorigin src="./assets/index-DLcZEgsV.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CZlft3oq.css">
   </head>
   <body>
     <header class="app-header">
@@ -20,6 +20,8 @@
             Open, cross-platform screw-thread dimension calculator · inspired by ME&nbsp;ThreadPal
           </p>
         </div>
+        <div class="header-right">
+        <button id="installBtn" class="install-btn" type="button" hidden>Install as desktop app</button>
         <div class="sensei-wrap" id="sensei-wrap" tabindex="0" aria-label="Tap-Sensei">
           <img id="sensei" class="sensei" src="./tap-sensei.png" alt="Tap-Sensei mascot"
             onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect rx=%2218%22 width=%22120%22 height=%22120%22 fill=%22%23cdd9c6%22/%3E%3Crect x=%2244%22 y=%2212%22 width=%2232%22 height=%2238%22 rx=%224%22 fill=%22%23b9c4b3%22 stroke=%22%23394a37%22 stroke-width=%223%22/%3E%3Crect x=%2250%22 y=%2248%22 width=%2220%22 height=%2236%22 fill=%22%23ccc%22 stroke=%22%23394a37%22 stroke-width=%223%22/%3E%3Ccircle cx=%2260%22 cy=%2292%22 r=%2218%22 fill=%22%23f3efe0%22 stroke=%22%23394a37%22 stroke-width=%223%22/%3E%3C/svg%3E';" />
@@ -27,6 +29,7 @@
             <strong>Tap-Sensei</strong>
             <span>Your friendly threading guide.</span>
           </div>
+        </div>
         </div>
       </div>
     </header>
@@ -210,10 +213,14 @@
           <ul id="notes"></ul>
           <p class="src" id="standard-src">—</p>
           <p class="src ack">
-            ME ThreadPal was created by Michael Rainey of Close Tolerance Software. ThreadBuddy keeps
-            that resource available and cross-platform — an independent reconstruction from public
-            engineering standards (ASME, ISO, DIN, BS, SAE). Verify critical values against the
-            governing standard. See PROVENANCE.md.
+            Data &amp; formulas from public standards.<br />
+            Fresh reimplementation of ME&nbsp;ThreadPal by Michael Rainey — gratefully acknowledged.<br />
+            Prerelease software, verify critical values against the governing standard.<br />
+            This software is provided free of charge and without any warranty, express or implied. The
+            user is responsible for verifying accuracy and is solely liable for any unintended
+            consequences.<br />
+            Please report any issues or inaccuracies you find to
+            <a href="https://github.com/npolanosky/threadbuddy/issues" target="_blank" rel="noopener">github.com/npolanosky/threadbuddy/issues</a>.
           </p>
         </section>
 
