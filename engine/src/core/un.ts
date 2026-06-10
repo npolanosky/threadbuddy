@@ -44,14 +44,19 @@ export function deriveUN(input: ThreadInput): ThreadResult {
   const external = isExternalClass(cls);
   const le = input.lengthOfEngagement ?? D;
   const starts = input.starts ?? 1;
-  const rounded = input.family === "UNR" || input.family === "UNJ";
+  const isUNJ = input.family === "UNJ";
+  const isUNR = input.family === "UNR";
   const sharp = input.sharpRoot ?? false;
 
   const H = fundamentalHeight(p, 60);
 
   const basicPitch = D - PD_COEFF * p;
-  const basicMinorInternal = D - MINOR_INT_COEFF * p;
-  const basicMinorExternal = D - (sharp ? MINOR_EXT_SHARP : MINOR_EXT_COEFF) * p;
+  // UNJ (SAE AS8879 / ASME B1.15): increased minor diameters (basic height 0.5625H) to clear the
+  // controlled external root radius. UN/UNR use the standard minors.
+  const basicMinorInternal = isUNJ ? D - 0.97428 * p : D - MINOR_INT_COEFF * p;
+  const basicMinorExternal = isUNJ
+    ? D - 1.19078 * p
+    : D - (sharp ? MINOR_EXT_SHARP : MINOR_EXT_COEFF) * p;
 
   const tol2A = pdTol2A(D, p, le);
   const allowance = roundInch(0.3 * tol2A);
@@ -61,19 +66,20 @@ export function deriveUN(input: ThreadInput): ThreadResult {
   const majorDiameter: ThreadResult["majorDiameter"] = { basic: D };
   const pitchDiameter: ThreadResult["pitchDiameter"] = { basic: roundInch(basicPitch) };
   const minorDiameter: ThreadResult["minorDiameter"] = {
-    basic: roundInch(rounded ? basicMinorInternal : basicMinorExternal),
+    basic: roundInch(external ? basicMinorExternal : basicMinorInternal),
   };
 
-  // Root flat / radius (B1.1): external root flat p/4, internal p/8; max root radius 0.144p,
-  // UNR/UNJ minimum 0.108p. Sharp-root option removes the flat.
+  // Root flat / radius. UN: optional rounded root, max radius 0.144P. UNR: mandatory rounded root
+  // 0.108–0.144P (external only). UNJ: controlled root radius 0.15011–0.18042P. Sharp removes the flat.
   const flatAtRoot = {
-    external: sharp ? 0 : roundInch(p / 4),
+    external: sharp || isUNJ ? 0 : roundInch(p / 4),
     internal: sharp ? 0 : roundInch(p / 8),
   };
-  const rootRadius: Limits = {
-    max: roundInch(0.144 * p),
-    min: rounded ? roundInch(0.108 * p) : NaN,
-  };
+  const rootRadius: Limits = isUNJ
+    ? { max: roundInch(0.18042 * p), min: roundInch(0.15011 * p) }
+    : { max: roundInch(0.144 * p), min: isUNR ? roundInch(0.108 * p) : NaN };
+  if (isUNJ) notes.push("UNJ profile (AS8879/B1.15): controlled external root radius 0.15011–0.18042P; minor diameters increased (basic height 0.5625H).");
+  if (isUNR) notes.push("UNR: mandatory rounded external root (radius 0.108–0.144P); other dimensions match UN.");
 
   let wires: ThreadResult["wires"];
 
@@ -133,7 +139,7 @@ export function deriveUN(input: ThreadInput): ThreadResult {
     leadAngleDeg: la,
     helixAngleDeg: la,
     fundamentalHeight: H,
-    threadHeight: roundInch(0.625 * H),
+    threadHeight: roundInch((isUNJ ? 0.5625 : 0.625) * H),
     allowance: external ? es : 0,
     majorDiameter,
     pitchDiameter,

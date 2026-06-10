@@ -113,7 +113,12 @@ function populateSizes(): void {
   sel.add(new Option("— Custom / type below —", "custom"));
   const sizes = currentSizes();
   sizes.forEach((e, idx) => sel.add(new Option(e.label, String(idx))));
-  const def = sizes.findIndex((e) => e.label.startsWith("1/4-20") || e.label.startsWith("M10 x 1.5"));
+  const pref =
+    group.id === "stim" ? "M6 x 1" :
+    group.id === "unm" ? "1.00" :
+    group.units === "metric" ? "M10 x 1.5" :
+    "1/4-20";
+  const def = sizes.findIndex((e) => e.label.startsWith(pref));
   if (def >= 0) { sel.value = String(def); applySize(sizes[def]); }
   else if (sizes.length) { sel.value = "0"; applySize(sizes[0]); }
   else sel.value = "custom";

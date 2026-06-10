@@ -27,18 +27,18 @@ flags any value that is provisional.
 |---|---|---|---|
 | UN / UNC / UNF / UNEF / UNS | ASME B1.1-2003 | Validated | pitch, major, allowance per published rows |
 | UNR (rounded root) | ASME B1.1-2003 | Validated | shares the UN engine |
-| UNJ | SAE AS8879C-2003 | Geometry | UN basis; controlled root radius pending |
+| UNJ | SAE AS8879C-2003 | Geometry | controlled root radius 0.15011–0.18042P; increased minor diameters (basic height 0.5625H) |
 | Metric M / MS | ISO 965-1 / ASME B1.13M | Geometry | basic exact; tolerances ~1 µm vs ISO R40 table |
-| Metric MJ | ASME B1.21M / ISO 5855 | Geometry | M basis |
+| Metric MJ | ASME B1.21M / ISO 5855 | Geometry | controlled root radius 0.15011–0.18042P; increased minor diameters |
 | Acme — GP / Centralizing / Stub | ASME B1.5-1997 | Geometry | tolerances provisional |
 | Whitworth — BSW / BSF | BS 84:1956 | Geometry | 55° form; tolerances provisional |
 | ISO Metric Trapezoidal | ISO 2901 | Geometry | 30° form; tolerances provisional |
 | US Buttress 7°/45° / ISO 3°/30° | ASME B1.9 / DIN 513 | Provisional | asymmetric geometry approximate |
 | NPT / NPTF (taper) | ASME B1.20.1 / B1.20.3 | Validated geometry | pipe-face & gage-notch dims, flats, truncation, L1–L4; NPTF distinct from NPT |
-| NPSM / NPSL (straight) | ASME B1.20.1 | Provisional | gauge-based tolerances pending |
+| NPSM / NPSL (straight) | ASME B1.20.1 | Geometry | distinct: NPSM at NPT gauge plane (E1), NPSL = E1 + P/4 (validated vs 1/2-14) |
 | BSPT / BSPP | ISO 7-1 | Provisional | 55° form; ISO 7 formulas pending |
 | UNM (miniature) | ASME B1.10 | Geometry | millimetre-based |
-| STI — Unified / Metric | manufacturer ref | Provisional | base series; insert oversize tables pending |
+| STI — Unified / Metric | manufacturer ref | Provisional | standard sizes added (default 1/4-20, M6×1); base series, insert oversize tables pending |
 | Pg conduit | DIN 40430 | Geometry | millimetre-based |
 
 Built-in size catalog: roughly 290 standard sizes across these families. Custom diameter/pitch entry

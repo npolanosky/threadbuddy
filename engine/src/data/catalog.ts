@@ -146,6 +146,24 @@ const UNM_SIZES: Array<[string, number, number]> = [
   ["1.20 UNM", 1.2, 0.25], ["1.40 UNM", 1.4, 0.3],
 ];
 
+// ---- Screw Thread Insert, Unified (nominal screw sizes the insert serves) ----
+const STI_UN_SIZES: Array<[string, number, number]> = [
+  ["#4-40", numDia(4), 40], ["#6-32", numDia(6), 32], ["#8-32", numDia(8), 32],
+  ["#10-24", numDia(10), 24], ["#10-32", numDia(10), 32], ["1/4-20", 0.25, 20],
+  ["1/4-28", 0.25, 28], ["5/16-18", 0.3125, 18], ["5/16-24", 0.3125, 24],
+  ["3/8-16", 0.375, 16], ["3/8-24", 0.375, 24], ["7/16-14", 0.4375, 14],
+  ["1/2-13", 0.5, 13], ["9/16-12", 0.5625, 12], ["5/8-11", 0.625, 11],
+  ["3/4-10", 0.75, 10], ["7/8-9", 0.875, 9], ["1-8", 1.0, 8],
+];
+
+// ---- Screw Thread Insert, Metric (nominal screw sizes the insert serves) ----
+const STI_M_SIZES: Array<[string, number, number]> = [
+  ["M3 x 0.5", 3, 0.5], ["M3.5 x 0.6", 3.5, 0.6], ["M4 x 0.7", 4, 0.7],
+  ["M5 x 0.8", 5, 0.8], ["M6 x 1", 6, 1], ["M8 x 1.25", 8, 1.25],
+  ["M10 x 1.5", 10, 1.5], ["M12 x 1.75", 12, 1.75], ["M14 x 2", 14, 2],
+  ["M16 x 2", 16, 2], ["M20 x 2.5", 20, 2.5], ["M24 x 3", 24, 3],
+];
+
 // ---- Metric conduit Pg (DIN 40430) (D, pitch mm) ----
 const PG_SIZES: Array<[string, number, number]> = [
   ["Pg7", 12.5, 1.27], ["Pg9", 15.2, 1.41], ["Pg11", 18.6, 1.41], ["Pg13.5", 20.4, 1.41],
@@ -213,6 +231,8 @@ export const CATALOG: CatalogEntry[] = [
   ...pipeEntries("BSPP", "G ", BSP_SIZES),
   ...metricFamilyEntries("UNM", "UNM", UNM_SIZES),
   ...metricFamilyEntries("PG_CONDUIT", "Pg", PG_SIZES),
+  ...inchEntries("STI_UN", "STI", STI_UN_SIZES),
+  ...metricFamilyEntries("STI_M", "STI", STI_M_SIZES),
 ];
 
 /** Catalog grouped by family for building UI dropdowns. */

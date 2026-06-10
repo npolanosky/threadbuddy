@@ -129,19 +129,57 @@ function deriveTaperPipe(input: ThreadInput): ThreadResult {
   };
 }
 
+/**
+ * Straight (parallel) pipe threads.
+ *  - NPSM (free-fitting mechanical) and NPSL (loose-fitting, locknut) — ASME B1.20.1.
+ *    Both share the NPT 60° form. NPSM pitch diameter is the NPT gauge-plane value (E1); NPSL is
+ *    larger by design (largest thread on standard pipe): E1 + P/4 with a 1.5-turn tolerance.
+ *    (Validated vs B1.20.1: 1/2-14 NPSM 0.7769/0.7718, NPSL 0.7963/0.7896.)
+ *  - BSPP — ISO 7-1 parallel pipe (55° Whitworth form), provisional.
+ */
 function deriveStraightPipe(input: ThreadInput): ThreadResult {
   const D = input.majorDiameter;
   const n = input.tpi ?? (input.pitch ? 1 / input.pitch : 0);
   const p = 1 / n;
   const fam = input.family;
-  const angle = fam === "BSPP" ? 55 : 60;
-  const coeff = angle === 55 ? 0.640327 : 0.64952;
-  const pitch = D - coeff * p;
-  const h = (angle === 55 ? 0.640327 : 0.8) * p;
-  const minor = pitch - h / 2;
-  const notes = [`Straight pipe thread ${fam}; tolerances provisional (gauge-based in the standard).`];
+  const notes: string[] = [];
 
-  const la = leadAngleDeg(p, pitch);
+  let angle: number;
+  let pitchBasic: number;
+  let extMax: number, extMin: number, intMin: number, intMax: number;
+
+  if (fam === "BSPP") {
+    angle = 55;
+    pitchBasic = D - 0.640327 * p;
+    extMax = pitchBasic; extMin = pitchBasic - 0.05 * p;
+    intMin = pitchBasic; intMax = pitchBasic + 0.05 * p;
+    notes.push("BSPP parallel pipe (ISO 7-1, 55° form); tolerances provisional.");
+  } else {
+    angle = 60;
+    const E0 = D - (0.05 * D + 1.1) * p;
+    const len = lookupNptLengths(D, n);
+    const L1 = len?.L1 ?? (0.8 * D + 6.8) * p;
+    const E1 = E0 + 0.0625 * L1;
+    if (!len) notes.push("Custom straight-pipe size — pitch diameter approximate (no B1.20.1 row).");
+    if (fam === "NPSL") {
+      pitchBasic = E1 + 0.25 * p; // largest thread on standard pipe
+      const tol = 0.09375 * p; // 1.5 turns x 0.0625 P
+      extMax = pitchBasic; extMin = pitchBasic - tol;
+      intMin = pitchBasic; intMax = pitchBasic + tol;
+      notes.push("NPSL (loose-fitting, locknut) per ASME B1.20.1: pitch diameter E1 + P/4, ±1.5-turn tolerance.");
+    } else {
+      pitchBasic = E1; // NPSM at the NPT gauge plane
+      const allow = 0.0015; const tol = 0.005; // approximate B1.20.1 free-fit limits
+      extMax = E1 - allow; extMin = extMax - tol;
+      intMin = E1; intMax = E1 + tol;
+      notes.push("NPSM (free-fitting mechanical) per ASME B1.20.1: pitch diameter at the NPT gauge plane (E1); tolerances approximate.");
+    }
+  }
+
+  const hHalf = (angle === 55 ? 0.640327 : 0.736025) * p; // pitch dia -> major/minor (diametral)
+  const major = pitchBasic + hHalf;
+  const minor = pitchBasic - hHalf;
+  const la = leadAngleDeg(p, pitchBasic);
   const label: Record<string, string> = { NPSM: "NPSM", NPSL: "NPSL", BSPP: "G" };
   return {
     family: fam,
@@ -156,10 +194,10 @@ function deriveStraightPipe(input: ThreadInput): ThreadResult {
     leadAngleDeg: la,
     helixAngleDeg: la,
     fundamentalHeight: fundamentalHeight(p, angle),
-    threadHeight: roundInch(h),
+    threadHeight: roundInch(hHalf),
     allowance: 0,
-    majorDiameter: { basic: roundInch(D), external: { max: roundInch(D), min: roundInch(D - 0.05 * p) }, internal: { max: NaN, min: roundInch(D) } },
-    pitchDiameter: { basic: roundInch(pitch), external: { max: roundInch(pitch), min: roundInch(pitch - 0.05 * p) }, internal: { max: roundInch(pitch + 0.05 * p), min: roundInch(pitch) } },
+    majorDiameter: { basic: roundInch(major), external: { max: roundInch(major), min: roundInch(major - 0.02 * p) }, internal: { max: NaN, min: roundInch(major) } },
+    pitchDiameter: { basic: roundInch(pitchBasic), external: { max: roundInch(extMax), min: roundInch(extMin) }, internal: { max: roundInch(intMax), min: roundInch(intMin) } },
     minorDiameter: { basic: roundInch(minor), external: { max: roundInch(minor), min: NaN }, internal: { max: NaN, min: roundInch(minor) } },
     notes,
   };

@@ -106,10 +106,15 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
   const { grade, position, external } = parseMetricClass(input.classOfFit);
 
   const sharp = input.sharpRoot ?? false;
+  // MJ profile (ASME B1.21M / ISO 5855): mandatory external root radius and increased minor
+  // diameters giving a basic thread height of 0.5625H (vs 0.625H for M).
+  const isMJ = input.family === "MJ";
   const H = fundamentalHeight(P, 60);
   const basicPitch = D - PD_COEFF * P;
-  const basicMinorInternal = D - MINOR_INT_COEFF * P;
-  const basicMinorExternal = D - (sharp ? MINOR_EXT_SHARP : MINOR_EXT_COEFF) * P;
+  const basicMinorInternal = isMJ ? D - 0.97428 * P : D - MINOR_INT_COEFF * P;
+  const basicMinorExternal = isMJ
+    ? D - 1.19078 * P
+    : D - (sharp ? MINOR_EXT_SHARP : MINOR_EXT_COEFF) * P;
 
   const majorDiameter: ThreadResult["majorDiameter"] = { basic: roundMetric(D) };
   const pitchDiameter: ThreadResult["pitchDiameter"] = { basic: roundMetric(basicPitch) };
@@ -169,12 +174,18 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
   const tapDrillInfo = !external ? buildTapDrillInfo(D, P, "metric", targetPercent, tapType) : undefined;
   // Root flat / radius for the ISO metric form (rounded external root).
   const flatAtRoot = { external: sharp ? 0 : roundMetric(P / 8), internal: sharp ? 0 : roundMetric(P / 4) };
-  const rootRadius = { max: roundMetric(0.14434 * P), min: roundMetric(0.125 * P) };
+  const rootRadius = isMJ
+    ? { max: roundMetric(0.18042 * P), min: roundMetric(0.15011 * P) }
+    : { max: roundMetric(0.14434 * P), min: roundMetric(0.125 * P) };
+  if (isMJ) {
+    notes.push("MJ profile (B1.21M/ISO 5855): controlled external root radius 0.15011–0.18042P; minor diameters increased (basic height 0.5625H).");
+  }
 
   const startTag = starts > 1 ? ` (${starts}-start)` : "";
+  const prefix = isMJ ? "MJ" : "M";
   return {
     family: input.family,
-    designation: `M${trimNum(D)}×${trimNum(P)}-${input.classOfFit}${startTag}`,
+    designation: `${prefix}${trimNum(D)}×${trimNum(P)}-${input.classOfFit}${startTag}`,
     units: "metric",
     pitch: P,
     tpi: 25.4 / P,
@@ -185,7 +196,7 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
     leadAngleDeg: la,
     helixAngleDeg: la,
     fundamentalHeight: H,
-    threadHeight: roundMetric(0.625 * H),
+    threadHeight: roundMetric((isMJ ? 0.5625 : 0.625) * H),
     allowance: external ? Math.abs(esExternal(position, P)) : 0,
     majorDiameter,
     pitchDiameter,
