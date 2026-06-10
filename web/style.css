@@ -205,7 +205,7 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
 
 /* Auto-width, centered: keeps each row's label immediately next to its value cells
    instead of stretching them apart across a full-width table. */
-.dim-table { width: auto; border-collapse: separate; border-spacing: 2px; margin: 8px auto; }
+.dim-table { width: auto; max-width: 100%; border-collapse: separate; border-spacing: 2px; margin: 8px 0; }
 .dim-table th, .dim-table td {
   padding: 4px 8px;
   text-align: right;
@@ -218,7 +218,7 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
   background: var(--value-bg);
   border: 1px solid #cdd4c4;
   border-radius: 3px;
-  min-width: 92px;
+  min-width: 54px;
 }
 /* Alternating row highlight to track data across the table. */
 .dim-table tbody tr:nth-child(even) td { background: var(--zebra); }
