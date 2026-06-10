@@ -51,16 +51,28 @@ function deriveTaperPipe(input: ThreadInput): ThreadResult {
   const L3 = Math.max(0, L2 - L1); // wrench makeup beyond hand-tight (derived)
   const E1 = E0 + 0.0625 * L1;
 
-  const heightMean = (0.8660254 - TRUNC_MIN - TRUNC_MAX) * p;
-  const majorFace = E0 + heightMean;
-  const majorGage = E1 + heightMean;
-  const minorFace = E0 - heightMean;
-  const minorGage = E1 - heightMean;
+  // Crest/root truncation coefficients (× p). NPT/BSPT crests and roots are equal; NPTF (Dryseal,
+  // ASME B1.20.3) truncates roots MORE than crests so metal-to-metal sealing occurs at crests/roots.
+  // (NPTF data point validated: 18 TPI crest 0.0026–0.0043, root 0.0043–0.0061 inch.)
+  const isNPTF = fam === "NPTF";
+  const crestT = isNPTF ? [0.047, 0.077] : [TRUNC_MIN, TRUNC_MAX];
+  const rootT = isNPTF ? [0.077, 0.11] : [TRUNC_MIN, TRUNC_MAX];
+  const H = 0.8660254;
+  const crestMean = (crestT[0] + crestT[1]) / 2;
+  const rootMean = (rootT[0] + rootT[1]) / 2;
+  const majDepth = (H - 2 * crestMean) * p; // pitch dia → major dia
+  const minDepth = (H - 2 * rootMean) * p; // pitch dia → minor dia
+  const heightMean = (majDepth + minDepth) / 2;
+  const majorFace = E0 + majDepth;
+  const majorGage = E1 + majDepth;
+  const minorFace = E0 - minDepth;
+  const minorGage = E1 - minDepth;
 
-  const truncCrest = { max: roundInch(TRUNC_MAX * p), min: roundInch(TRUNC_MIN * p) };
-  const truncRoot = { ...truncCrest };
-  const flatCrest = { max: roundInch(TRUNC_MAX * p * FLAT_FROM_TRUNC), min: roundInch(TRUNC_MIN * p * FLAT_FROM_TRUNC) };
-  const flatRoot = { ...flatCrest };
+  const truncCrest = { max: roundInch(crestT[1] * p), min: roundInch(crestT[0] * p) };
+  const truncRoot = { max: roundInch(rootT[1] * p), min: roundInch(rootT[0] * p) };
+  // Flats derived from the (rounded) truncations, matching the original's displayed values.
+  const flatCrest = { max: roundInch(FLAT_FROM_TRUNC * truncCrest.max), min: roundInch(FLAT_FROM_TRUNC * truncCrest.min) };
+  const flatRoot = { max: roundInch(FLAT_FROM_TRUNC * truncRoot.max), min: roundInch(FLAT_FROM_TRUNC * truncRoot.min) };
 
   // Tap drill: nearest standard drill to the required hole (minor at the pipe-face plane).
   const requiredHole = minorFace;

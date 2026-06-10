@@ -31,9 +31,39 @@ body {
   color: #eef3ea;
   padding: 14px 22px;
 }
+.header-inner {
+  max-width: 1280px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
 .app-header h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; }
 .app-header h1 span { color: #b9d8b3; font-weight: 400; }
 .tagline { margin: 4px 0 0; font-size: 12.5px; color: #c7d6c1; }
+
+/* Tap-Sensei mascot in the header, with a hover/click description popup. */
+.sensei-wrap { position: relative; flex: none; cursor: pointer; outline: none; }
+.sensei {
+  width: 66px; height: 66px; object-fit: contain; display: block;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+  transition: transform 0.15s ease;
+}
+.sensei-wrap:hover .sensei, .sensei-wrap:focus .sensei { transform: scale(1.06) rotate(-2deg); }
+.sensei-pop {
+  position: absolute; top: 100%; right: 0; margin-top: 8px; z-index: 20;
+  display: none; min-width: 180px;
+  background: var(--value-bg); color: #000;
+  border: 1px solid var(--value-border); border-radius: 8px;
+  padding: 8px 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  text-align: left;
+}
+.sensei-pop strong { display: block; font-size: 14px; }
+.sensei-pop span { font-size: 12px; color: #34452f; }
+.sensei-pop::before {
+  content: ""; position: absolute; top: -6px; right: 22px;
+  width: 10px; height: 10px; background: var(--value-bg);
+  border-left: 1px solid var(--value-border); border-top: 1px solid var(--value-border);
+  transform: rotate(45deg);
+}
+.sensei-wrap:hover .sensei-pop, .sensei-wrap:focus .sensei-pop, .sensei-pop.show { display: block; }
 
 .dashboard {
   display: flex;
@@ -44,9 +74,11 @@ body {
   margin: 0 auto;
 }
 
-/* Results: External then Internal, full width, stacked tightly (like the original).
-   Everything else lives in the uniform controls grid below — no dead vertical space. */
-.results { display: flex; flex-direction: column; gap: 12px; }
+/* Top band: dimension panels (left, narrow) with MOW + Display Options beside them (right).
+   Collapses to a single column on narrow/mobile screens. */
+.top { display: flex; gap: 12px; align-items: flex-start; }
+.dims { flex: 1 1 480px; min-width: 0; max-width: 560px; display: flex; flex-direction: column; gap: 12px; }
+.aside { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
 
 .controls-grid {
   display: grid;
@@ -55,17 +87,15 @@ body {
   align-items: start;
 }
 
-/* Control-row order: Thread Type | Classes of Fit | Tap Drills | Measurement Over Wires,
-   then Starts, Display, Coating, Notes below. */
+/* Controls grid order: Thread Type | Classes | Starts | Tap Drills (or Pipe Detail),
+   then Coating and Notes spanning below. */
 #panel-input { order: 1; }
 #panel-class { order: 2; }
-#panel-tap { order: 3; }
-#panel-mow { order: 4; }
-#panel-starts { order: 5; }
-#panel-display { order: 6; }
-#panel-coating { order: 7; }
-#panel-notes { order: 8; }
-#panel-pipe { order: 3; }
+#panel-starts { order: 3; }
+#panel-tap { order: 4; }
+#panel-pipe { order: 4; }
+#panel-coating { order: 5; }
+#panel-notes { order: 6; }
 
 /* Tapered-thread (NPT/NPTF/BSPT) layout swap. */
 .taper-only { display: none; }
@@ -96,12 +126,14 @@ body {
 
 .span2 { grid-column: span 2; }
 
-.mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px; }
-.mini-grid > div { display: flex; flex-direction: column; gap: 2px; font-size: 11px; }
+/* Compact, centered set of small labelled boxes (flat-at-root, radii, height, …). */
+.mini-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 10px; margin-top: 8px; }
+.mini-grid > div { display: flex; flex-direction: column; gap: 2px; font-size: 11px; align-items: center; }
 .mini-grid span { font-weight: 600; }
 .mini-grid output {
   background: var(--value-bg); border: 1px solid var(--value-border); border-radius: 4px;
   padding: 3px 6px; font-variant-numeric: tabular-nums; text-align: right;
+  min-width: 78px;
 }
 .check { display: flex; align-items: center; gap: 6px; font-size: 12.5px; margin: 6px 0; }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
@@ -209,9 +241,16 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
 @media (max-width: 1080px) {
   .controls-grid { grid-template-columns: repeat(2, 1fr); }
 }
+@media (max-width: 860px) {
+  /* Stack the top band: dimensions, then MOW/Display, full width (mobile-friendly). */
+  .top { flex-direction: column; }
+  .dims, .aside { max-width: none; flex-basis: auto; }
+}
 @media (max-width: 640px) {
   .controls-grid { grid-template-columns: 1fr; }
   .span2 { grid-column: span 1; }
+  .header-inner { gap: 10px; }
+  .sensei { width: 52px; height: 52px; }
 }
 
 @media print {

@@ -4,19 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ThreadBuddy — Screw Thread Calculator</title>
+    <meta name="description" content="Open, cross-platform screw-thread dimension calculator for machining." />
     <link rel="stylesheet" href="./style.css" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#2f4a2e" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
   </head>
   <body>
     <header class="app-header">
-      <h1>Thread<span>Buddy</span></h1>
-      <p class="tagline">
-        Open, cross-platform screw-thread dimension calculator · inspired by ME&nbsp;ThreadPal
-      </p>
+      <div class="header-inner">
+        <div class="header-title">
+          <h1>Thread<span>Buddy</span></h1>
+          <p class="tagline">
+            Open, cross-platform screw-thread dimension calculator · inspired by ME&nbsp;ThreadPal
+          </p>
+        </div>
+        <div class="sensei-wrap" id="sensei-wrap" tabindex="0" aria-label="Tap-Sensei">
+          <img id="sensei" class="sensei" src="./tap-sensei.png" alt="Tap-Sensei mascot"
+            onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect rx=%2218%22 width=%22120%22 height=%22120%22 fill=%22%23cdd9c6%22/%3E%3Crect x=%2244%22 y=%2212%22 width=%2232%22 height=%2238%22 rx=%224%22 fill=%22%23b9c4b3%22 stroke=%22%23394a37%22 stroke-width=%223%22/%3E%3Crect x=%2250%22 y=%2248%22 width=%2220%22 height=%2236%22 fill=%22%23ccc%22 stroke=%22%23394a37%22 stroke-width=%223%22/%3E%3Ccircle cx=%2260%22 cy=%2292%22 r=%2218%22 fill=%22%23f3efe0%22 stroke=%22%23394a37%22 stroke-width=%223%22/%3E%3C/svg%3E';" />
+          <div class="sensei-pop" id="sensei-pop" role="tooltip">
+            <strong>Tap-Sensei</strong>
+            <span>Your friendly threading guide.</span>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main class="dashboard">
-      <!-- ===== RESULTS (top, full width, like the original) ===== -->
-      <div class="results">
+      <!-- ===== TOP: dimensions (left) + MOW & Display (right) ===== -->
+      <div class="top">
+        <div class="dims">
           <section class="panel result" id="panel-external">
             <h2>External Dimensions <span class="desig" id="desig-ext">—</span></h2>
             <div class="std-only">
@@ -31,8 +48,8 @@
               </table>
               <div class="mini-grid">
                 <div><span>Flat at root</span><output id="ext-flat">—</output></div>
-                <div><span>Root radius max</span><output id="ext-rr-max">—</output></div>
-                <div><span>Root radius min</span><output id="ext-rr-min">—</output></div>
+                <div><span>Root rad max</span><output id="ext-rr-max">—</output></div>
+                <div><span>Root rad min</span><output id="ext-rr-min">—</output></div>
                 <div><span>Height (basic)</span><output id="ext-height">—</output></div>
               </div>
             </div>
@@ -84,10 +101,9 @@
               </div>
             </div>
           </section>
-      </div>
+        </div>
 
-      <!-- ===== CONTROLS (below, uniform grid like the original) ===== -->
-      <div class="controls-grid">
+        <div class="aside">
           <section class="panel result" id="panel-mow">
             <h2>Measurement Over Wires</h2>
             <div class="dim-row"><span class="dim-name">MOW max</span><output id="mow-max">—</output></div>
@@ -105,37 +121,27 @@
             <button id="resetWire" type="button" class="btn small">Reset wire</button>
           </section>
 
-          <section class="panel result std-only" id="panel-tap">
-            <h2>Tap Drills</h2>
+          <section class="panel control" id="panel-display">
+            <h2>Display Options</h2>
             <div class="radio-row">
-              <label><input type="radio" name="tapType" value="cut" checked /> Cut</label>
-              <label><input type="radio" name="tapType" value="form" /> Form</label>
+              <label><input type="radio" name="units" value="inch" checked /> Inch</label>
+              <label><input type="radio" name="units" value="metric" /> Metric</label>
             </div>
-            <label class="field inline"><span>% thread</span><input id="percent" type="number" step="1" value="75" min="1" max="100" /></label>
-            <div class="dim-row"><span class="dim-name">Hole (theoretical)</span><output id="tap-theo">—</output></div>
-            <table class="dim-table compact drill-table">
-              <thead><tr><th>Drill</th><th>Dia</th><th>%</th></tr></thead>
-              <tbody id="drill-rows"></tbody>
-            </table>
+            <div class="radio-row">
+              <label><input type="radio" name="anglename" value="lead" checked /> Lead</label>
+              <label><input type="radio" name="anglename" value="helix" /> Helix</label>
+            </div>
+            <label class="check"><input type="checkbox" id="sharpRoot" /> Sharp root</label>
+            <div class="btn-row">
+              <button id="resetAll" type="button" class="btn">Reset all to default</button>
+              <button id="printBtn" type="button" class="btn">Print report</button>
+            </div>
           </section>
+        </div>
+      </div>
 
-        <section class="panel result taper-only" id="panel-pipe">
-          <h2>Pipe Thread Detail</h2>
-          <table class="dim-table">
-            <thead><tr><th></th><th>Crest</th><th>Root</th></tr></thead>
-            <tbody>
-              <tr><th>Flat (min–max)</th><td id="tp-flat-crest">—</td><td id="tp-flat-root">—</td></tr>
-              <tr><th>Truncation (min–max)</th><td id="tp-trunc-crest">—</td><td id="tp-trunc-root">—</td></tr>
-            </tbody>
-          </table>
-          <div class="mini-grid">
-            <div><span>L1 hand-tight</span><output id="tp-l1">—</output></div>
-            <div><span>L2 effective</span><output id="tp-l2">—</output></div>
-            <div><span>L3 wrench makeup</span><output id="tp-l3">—</output></div>
-            <div><span>L4 overall</span><output id="tp-l4">—</output></div>
-          </div>
-        </section>
-
+      <!-- ===== CONTROLS grid ===== -->
+      <div class="controls-grid">
         <section class="panel control" id="panel-input">
           <h2>Thread Type &amp; Size</h2>
           <label class="field"><span>Thread type</span><select id="family"></select></label>
@@ -165,20 +171,34 @@
           <label class="field"><span>Length of engagement</span><input id="loe" type="number" step="any" placeholder="default = major dia" /></label>
         </section>
 
-        <section class="panel control" id="panel-display">
-          <h2>Display Options</h2>
+        <section class="panel result std-only" id="panel-tap">
+          <h2>Tap Drills</h2>
           <div class="radio-row">
-            <label><input type="radio" name="units" value="inch" checked /> Inch</label>
-            <label><input type="radio" name="units" value="metric" /> Metric</label>
+            <label><input type="radio" name="tapType" value="cut" checked /> Cut</label>
+            <label><input type="radio" name="tapType" value="form" /> Form</label>
           </div>
-          <div class="radio-row">
-            <label><input type="radio" name="anglename" value="lead" checked /> Lead</label>
-            <label><input type="radio" name="anglename" value="helix" /> Helix</label>
-          </div>
-          <label class="check"><input type="checkbox" id="sharpRoot" /> Sharp root</label>
-          <div class="btn-row">
-            <button id="resetAll" type="button" class="btn">Reset all to default</button>
-            <button id="printBtn" type="button" class="btn">Print report</button>
+          <label class="field inline"><span>% thread</span><input id="percent" type="number" step="1" value="75" min="1" max="100" /></label>
+          <div class="dim-row"><span class="dim-name">Hole (theoretical)</span><output id="tap-theo">—</output></div>
+          <table class="dim-table compact drill-table">
+            <thead><tr><th>Drill</th><th>Dia</th><th>%</th></tr></thead>
+            <tbody id="drill-rows"></tbody>
+          </table>
+        </section>
+
+        <section class="panel result taper-only" id="panel-pipe">
+          <h2>Pipe Thread Detail</h2>
+          <table class="dim-table">
+            <thead><tr><th></th><th>Crest</th><th>Root</th></tr></thead>
+            <tbody>
+              <tr><th>Flat (min–max)</th><td id="tp-flat-crest">—</td><td id="tp-flat-root">—</td></tr>
+              <tr><th>Truncation (min–max)</th><td id="tp-trunc-crest">—</td><td id="tp-trunc-root">—</td></tr>
+            </tbody>
+          </table>
+          <div class="mini-grid">
+            <div><span>L1 hand-tight</span><output id="tp-l1">—</output></div>
+            <div><span>L2 effective</span><output id="tp-l2">—</output></div>
+            <div><span>L3 wrench makeup</span><output id="tp-l3">—</output></div>
+            <div><span>L4 overall</span><output id="tp-l4">—</output></div>
           </div>
         </section>
 

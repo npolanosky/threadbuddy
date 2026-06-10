@@ -42,3 +42,20 @@ describe("1/16-27 NPT taper pipe", () => {
     expect(t.lengths.L4).toBeCloseTo(0.2875, 3);
   });
 });
+
+describe("NPT vs NPTF are handled distinctly (ASME B1.20.1 vs B1.20.3)", () => {
+  const npt = calculate({ family: "NPT", majorDiameter: 0.3125, tpi: 27, classOfFit: "std" }).taper!;
+  const nptf = calculate({ family: "NPTF", majorDiameter: 0.3125, tpi: 27, classOfFit: "std" }).taper!;
+
+  it("share identical pitch diameters (correct per standard)", () => {
+    expect(nptf.external.pitch.pipeFace).toBeCloseTo(npt.external.pitch.pipeFace, 4);
+    expect(nptf.external.pitch.gageNotch).toBeCloseTo(npt.external.pitch.gageNotch, 4);
+  });
+  it("NPTF has a fuller (larger) minor — roots truncated more, so they differ", () => {
+    expect(nptf.external.minor.pipeFace).not.toBeCloseTo(npt.external.minor.pipeFace, 4);
+    expect(nptf.external.minor.pipeFace).toBeGreaterThan(npt.external.minor.pipeFace);
+  });
+  it("NPTF crest and root truncations differ from each other", () => {
+    expect(nptf.truncation.crest.min).not.toBeCloseTo(nptf.truncation.root.min, 4);
+  });
+});

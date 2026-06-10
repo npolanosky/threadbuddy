@@ -424,6 +424,19 @@ function init(): void {
   $("resetWire").addEventListener("click", () => { $<HTMLInputElement>("altWire").value = ""; $<HTMLInputElement>("useCoating").checked = false; recompute(); });
   $("resetAll").addEventListener("click", resetToDefaults);
   $("printBtn").addEventListener("click", () => window.print());
+
+  // Tap-Sensei popup: shown on hover/focus via CSS; click toggles it for touch devices.
+  const senseiWrap = $("sensei-wrap");
+  const senseiPop = $("sensei-pop");
+  senseiWrap.addEventListener("click", (e) => { e.stopPropagation(); senseiPop.classList.toggle("show"); });
+  document.addEventListener("click", () => senseiPop.classList.remove("show"));
 }
 
 init();
+
+// Register the service worker for offline / installable PWA use.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {/* offline support is best-effort */});
+  });
+}

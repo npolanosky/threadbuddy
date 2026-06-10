@@ -25,6 +25,9 @@ npm run preview    # serve the built site
 
 Deploy: push, then in GitHub → **Settings → Pages**, serve from branch `main` `/docs`.
 
+**Installable PWA / offline:** ThreadBuddy ships a web app manifest and a service worker, so it can
+be installed to a desktop/phone home screen and used offline like a native app.
+
 ## How it works
 
 - **`engine/`** — a framework-agnostic TypeScript calculation core. One formula module per
