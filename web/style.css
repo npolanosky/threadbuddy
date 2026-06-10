@@ -74,28 +74,19 @@ body {
   margin: 0 auto;
 }
 
-/* Top band: dimension panels (left, narrow) with MOW + Display Options beside them (right).
-   Collapses to a single column on narrow/mobile screens. */
-.top { display: flex; gap: 12px; align-items: flex-start; }
-.dims { flex: 1 1 480px; min-width: 0; max-width: 560px; display: flex; flex-direction: column; gap: 12px; }
-.aside { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+/* Three bands on desktop: top (2 cols), center (3 cols), bottom (2 cols).
+   Each band/column stacks independently so panels of different heights never leave gaps. */
+.band-top { display: flex; gap: 12px; align-items: flex-start; }
+.col-dims { flex: 1.4 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.col-aside { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.band-center { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: start; }
+.band-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
 
-.controls-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  align-items: start;
+/* Sub-heading for the Classes-of-Fit block inside the Thread Type panel. */
+.subhead {
+  margin: 12px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px;
+  border-bottom: 1px solid var(--value-border); padding-bottom: 4px; text-align: center;
 }
-
-/* Controls grid order: Thread Type | Classes | Starts | Tap Drills (or Pipe Detail),
-   then Coating and Notes spanning below. */
-#panel-input { order: 1; }
-#panel-class { order: 2; }
-#panel-starts { order: 3; }
-#panel-tap { order: 4; }
-#panel-pipe { order: 4; }
-#panel-coating { order: 5; }
-#panel-notes { order: 6; }
 
 /* Tapered-thread (NPT/NPTF/BSPT) layout swap. */
 .taper-only { display: none; }
@@ -124,7 +115,6 @@ body {
 }
 .desig { font-weight: 700; text-transform: none; letter-spacing: 0; color: #000; font-size: 13px; }
 
-.span2 { grid-column: span 2; }
 
 /* Compact, centered set of small labelled boxes (flat-at-root, radii, height, …). */
 .mini-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 10px; margin-top: 8px; }
@@ -238,17 +228,20 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
 .hidden { display: none !important; }
 .warn output, output.warn { color: #b3261e; font-weight: 700; }
 
-@media (max-width: 1080px) {
-  .controls-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 860px) {
-  /* Stack the top band: dimensions, then MOW/Display, full width (mobile-friendly). */
-  .top { flex-direction: column; }
-  .dims, .aside { max-width: none; flex-basis: auto; }
-}
-@media (max-width: 640px) {
-  .controls-grid { grid-template-columns: 1fr; }
-  .span2 { grid-column: span 1; }
+/* Narrow / mobile: flatten the bands into one column with a custom order, and place
+   Display Options + MOW side by side in their own half-width row. */
+@media (max-width: 760px) {
+  .band-top, .col-dims, .band-center, .band-bottom { display: contents; }
+  .col-aside { display: flex; flex-direction: row; gap: 12px; }
+  .col-aside > .panel { flex: 1 1 0; min-width: 0; }
+  #panel-input { order: 1; }
+  #panel-internal { order: 2; }
+  #panel-external { order: 3; }
+  .col-aside { order: 4; }
+  #panel-tap, #panel-pipe { order: 5; }
+  #panel-coating { order: 6; }
+  #panel-starts { order: 7; }
+  #panel-notes { order: 8; }
   .header-inner { gap: 10px; }
   .sensei { width: 52px; height: 52px; }
 }

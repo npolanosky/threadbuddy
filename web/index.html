@@ -31,9 +31,9 @@
     </header>
 
     <main class="dashboard">
-      <!-- ===== TOP: dimensions (left) + MOW & Display (right) ===== -->
-      <div class="top">
-        <div class="dims">
+      <!-- ===== TOP BAND (2 columns): dimensions | display + MOW ===== -->
+      <div class="band-top">
+        <div class="col-dims">
           <section class="panel result" id="panel-external">
             <h2>External Dimensions <span class="desig" id="desig-ext">—</span></h2>
             <div class="std-only">
@@ -103,24 +103,7 @@
           </section>
         </div>
 
-        <div class="aside">
-          <section class="panel result" id="panel-mow">
-            <h2>Measurement Over Wires</h2>
-            <div class="dim-row"><span class="dim-name">MOW max</span><output id="mow-max">—</output></div>
-            <div class="dim-row"><span class="dim-name">MOW min</span><output id="mow-min">—</output></div>
-            <table class="dim-table compact">
-              <tbody>
-                <tr><th>Wire best</th><td id="wire-best">—</td></tr>
-                <tr><th>Wire max</th><td id="wire-max">—</td></tr>
-                <tr><th>Wire min</th><td id="wire-min">—</td></tr>
-                <tr><th>Constant</th><td id="wire-const">—</td></tr>
-              </tbody>
-            </table>
-            <label class="field"><span>Alternate wire (updates MOW above)</span><input id="altWire" type="number" step="any" placeholder="best" /></label>
-            <label class="check"><input type="checkbox" id="useCoating" /> Use coating/polish</label>
-            <button id="resetWire" type="button" class="btn small">Reset wire</button>
-          </section>
-
+        <div class="col-aside">
           <section class="panel control" id="panel-display">
             <h2>Display Options</h2>
             <div class="radio-row">
@@ -137,11 +120,28 @@
               <button id="printBtn" type="button" class="btn">Print report</button>
             </div>
           </section>
+
+          <section class="panel result" id="panel-mow">
+            <h2>Measurement Over Wires</h2>
+            <table class="dim-table compact">
+              <tbody>
+                <tr><th>MOW max</th><td id="mow-max">—</td></tr>
+                <tr><th>MOW min</th><td id="mow-min">—</td></tr>
+                <tr><th>Wire best</th><td id="wire-best">—</td></tr>
+                <tr><th>Wire max</th><td id="wire-max">—</td></tr>
+                <tr><th>Wire min</th><td id="wire-min">—</td></tr>
+                <tr><th>Constant</th><td id="wire-const">—</td></tr>
+              </tbody>
+            </table>
+            <label class="field"><span>Alternate wire (updates MOW above)</span><input id="altWire" type="number" step="any" placeholder="best" /></label>
+            <label class="check"><input type="checkbox" id="useCoating" /> Use coating/polish</label>
+            <button id="resetWire" type="button" class="btn small">Reset wire</button>
+          </section>
         </div>
       </div>
 
-      <!-- ===== CONTROLS grid ===== -->
-      <div class="controls-grid">
+      <!-- ===== CENTER BAND (3 columns) ===== -->
+      <div class="band-center">
         <section class="panel control" id="panel-input">
           <h2>Thread Type &amp; Size</h2>
           <label class="field"><span>Thread type</span><select id="family"></select></label>
@@ -152,12 +152,11 @@
             <label class="field hidden" id="pitchField"><span>Pitch (mm)</span><input id="pitch" type="number" step="any" /></label>
           </div>
           <div class="radio-row" id="variantRow"></div>
-        </section>
-
-        <section class="panel control" id="panel-class">
-          <h2>Classes of Fit</h2>
-          <label class="field"><span>External</span><select id="classExternal"></select></label>
-          <label class="field"><span>Internal</span><select id="classInternal"></select></label>
+          <h3 class="subhead">Classes of Fit</h3>
+          <div class="custom-grid">
+            <label class="field"><span>External</span><select id="classExternal"></select></label>
+            <label class="field"><span>Internal</span><select id="classInternal"></select></label>
+          </div>
         </section>
 
         <section class="panel control" id="panel-starts">
@@ -201,8 +200,17 @@
             <div><span>L4 overall</span><output id="tp-l4">—</output></div>
           </div>
         </section>
+      </div>
 
-        <section class="panel control span2" id="panel-coating">
+      <!-- ===== BOTTOM BAND (2 columns): Notes | Coating ===== -->
+      <div class="band-bottom">
+        <section class="panel control" id="panel-notes">
+          <h2>Notes &amp; Provenance</h2>
+          <ul id="notes"></ul>
+          <p class="src" id="standard-src">—</p>
+        </section>
+
+        <section class="panel control" id="panel-coating">
           <h2>Coating / Polishing</h2>
           <div class="custom-grid">
             <label class="field inline"><span>Thickness (radial)</span><input id="coatThk" type="number" step="any" placeholder="0" /></label>
@@ -224,12 +232,6 @@
             </tbody>
           </table>
           <p class="src" id="coat-note">Adds material on the selected hand; 4× rule for 60° pitch diameter.</p>
-        </section>
-
-        <section class="panel control span2" id="panel-notes">
-          <h2>Notes &amp; Provenance</h2>
-          <ul id="notes"></ul>
-          <p class="src" id="standard-src">—</p>
         </section>
       </div>
     </main>
