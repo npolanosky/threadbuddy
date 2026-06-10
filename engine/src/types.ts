@@ -147,8 +147,37 @@ export interface ThreadResult {
   tapDrill?: number;
   /** Detailed tap-drill recommendation with a table of candidate drills. */
   tapDrillInfo?: TapDrillInfo;
+  /** Tapered-pipe-specific results (NPT/NPTF/BSPT), present only for taper families. */
+  taper?: TaperResult;
   /** Non-fatal notes (e.g. "special size", validation hints). */
   notes: string[];
+}
+
+/** A dimension reported at the two reference planes of a taper thread. */
+export interface PlanePair {
+  pipeFace: number;
+  gageNotch: number;
+}
+
+/** Tapered pipe thread results per ASME B1.20.1 / ISO 7-1. */
+export interface TaperResult {
+  pipeDiameter: number;
+  external: { major: PlanePair; pitch: PlanePair; minor: PlanePair };
+  internal: {
+    minor: { pipeEndL1: number; pipeFace: number };
+    pitchGageNotch: number;
+    tapDrill: number;
+    tapDrillName: string;
+    tapDepthRef: number;
+  };
+  flat: { crest: Limits; root: Limits };
+  truncation: { crest: Limits; root: Limits };
+  radii?: { crest: Limits; root: Limits };
+  /** Engagement lengths: L1 hand-tight, L2 effective, L3 wrench makeup, L4 overall. */
+  lengths: { L1: number; L2: number; L3: number; L4: number };
+  heightMean: number;
+  /** Measurement over wires at the gauge notch (informational). */
+  mowGageNotch?: number;
 }
 
 // ---- Coating / polishing ----

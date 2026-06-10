@@ -65,6 +65,12 @@ body {
 #panel-display { order: 6; }
 #panel-coating { order: 7; }
 #panel-notes { order: 8; }
+#panel-pipe { order: 3; }
+
+/* Tapered-thread (NPT/NPTF/BSPT) layout swap. */
+.taper-only { display: none; }
+.taper .taper-only { display: block; }
+.taper .std-only { display: none; }
 
 .panel {
   border-radius: 8px;

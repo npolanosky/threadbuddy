@@ -190,6 +190,12 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
   // Highlight Starts/Lead panel when multi-start or a custom length of engagement is set.
   const startsChanged = (src.starts ?? 1) !== 1 || $<HTMLInputElement>("loe").value.trim() !== "";
   $("panel-starts").classList.toggle("changed", startsChanged);
+
+  // Tapered pipe layout swap (NPT/NPTF/BSPT): special fields, disabled %/LoE/form-tap.
+  const taper = rExt?.taper ?? rInt?.taper ?? null;
+  document.body.classList.toggle("taper", !!taper);
+  $<HTMLInputElement>("loe").disabled = !!taper;
+  if (taper) renderTaper(taper);
   if (rInt) {
     setText("desig-int", rInt.designation);
     setText("int-min-min", fmt(rInt.minorDiameter.internal?.min));
@@ -253,6 +259,39 @@ function renderWires(r: ThreadResult, coatExt: CoatingResult | null): void {
   const changed = altSet || useCoat;
   maxBox.classList.toggle("changed", changed);
   minBox.classList.toggle("changed", changed);
+}
+
+/** Fill the tapered-pipe (NPT/NPTF/BSPT) display fields. */
+function renderTaper(t: NonNullable<ThreadResult["taper"]>): void {
+  const range = (l: Limits): string => `${fmt(l.min)}–${fmt(l.max)}`;
+  setText("tp-pipedia", fmt(t.pipeDiameter));
+  setText("tp-maj-face", fmt(t.external.major.pipeFace));
+  setText("tp-maj-gage", fmt(t.external.major.gageNotch));
+  setText("tp-pd-face", fmt(t.external.pitch.pipeFace));
+  setText("tp-pd-gage", fmt(t.external.pitch.gageNotch));
+  setText("tp-min-face", fmt(t.external.minor.pipeFace));
+  setText("tp-min-gage", fmt(t.external.minor.gageNotch));
+  setText("tp-rad-crest", t.radii ? fmt(t.radii.crest.max) : "—");
+  setText("tp-rad-root", t.radii ? fmt(t.radii.root.max) : "—");
+  setText("tp-height", fmt(t.heightMean));
+  setText("tp-imin-l1", fmt(t.internal.minor.pipeEndL1));
+  setText("tp-imin-face", fmt(t.internal.minor.pipeFace));
+  setText("tp-ipd-gage", fmt(t.internal.pitchGageNotch));
+  setText("tp-tapdrill", `${fmt(t.internal.tapDrill)} (${t.internal.tapDrillName})`);
+  setText("tp-tapdepth", fmt(t.internal.tapDepthRef));
+  setText("tp-flat-crest", range(t.flat.crest));
+  setText("tp-flat-root", range(t.flat.root));
+  setText("tp-trunc-crest", range(t.truncation.crest));
+  setText("tp-trunc-root", range(t.truncation.root));
+  setText("tp-l1", fmt(t.lengths.L1));
+  setText("tp-l2", fmt(t.lengths.L2));
+  setText("tp-l3", fmt(t.lengths.L3));
+  setText("tp-l4", fmt(t.lengths.L4));
+  // 2-wire measurement over wires at the gauge notch.
+  if (t.mowGageNotch !== undefined) {
+    setText("mow-max", fmt(t.mowGageNotch));
+    setText("mow-min", "—");
+  }
 }
 
 /** Build a coating result for a result+hand from the current coating inputs, or null. */

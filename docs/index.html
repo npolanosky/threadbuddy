@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ThreadBuddy — Screw Thread Calculator</title>
-    <script type="module" crossorigin src="./assets/index-BTO_mjod.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CeglrgtJ.css">
+    <script type="module" crossorigin src="./assets/index-DTZBjeRz.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DcT7xtLj.css">
   </head>
   <body>
     <header class="app-header">
@@ -20,36 +20,69 @@
       <div class="results">
           <section class="panel result" id="panel-external">
             <h2>External Dimensions <span class="desig" id="desig-ext">—</span></h2>
-            <div class="dim-row"><span class="dim-name">Allowance</span><output id="ext-allow">—</output></div>
-            <table class="dim-table">
-              <thead><tr><th></th><th>Max</th><th>Min</th><th>Mean</th><th>Tol</th></tr></thead>
-              <tbody>
-                <tr><th>Major dia</th><td id="ext-maj-max">—</td><td id="ext-maj-min">—</td><td id="ext-maj-mean">—</td><td id="ext-maj-tol">—</td></tr>
-                <tr><th>Pitch dia</th><td id="ext-pd-max">—</td><td id="ext-pd-min">—</td><td id="ext-pd-mean">—</td><td id="ext-pd-tol">—</td></tr>
-                <tr><th>Minor dia</th><td id="ext-min-max">—</td><td id="ext-min-min">—</td><td id="ext-min-mean">—</td><td></td></tr>
-              </tbody>
-            </table>
-            <div class="mini-grid">
-              <div><span>Flat at root</span><output id="ext-flat">—</output></div>
-              <div><span>Root radius max</span><output id="ext-rr-max">—</output></div>
-              <div><span>Root radius min</span><output id="ext-rr-min">—</output></div>
-              <div><span>Height (basic)</span><output id="ext-height">—</output></div>
+            <div class="std-only">
+              <div class="dim-row"><span class="dim-name">Allowance</span><output id="ext-allow">—</output></div>
+              <table class="dim-table">
+                <thead><tr><th></th><th>Max</th><th>Min</th><th>Mean</th><th>Tol</th></tr></thead>
+                <tbody>
+                  <tr><th>Major dia</th><td id="ext-maj-max">—</td><td id="ext-maj-min">—</td><td id="ext-maj-mean">—</td><td id="ext-maj-tol">—</td></tr>
+                  <tr><th>Pitch dia</th><td id="ext-pd-max">—</td><td id="ext-pd-min">—</td><td id="ext-pd-mean">—</td><td id="ext-pd-tol">—</td></tr>
+                  <tr><th>Minor dia</th><td id="ext-min-max">—</td><td id="ext-min-min">—</td><td id="ext-min-mean">—</td><td></td></tr>
+                </tbody>
+              </table>
+              <div class="mini-grid">
+                <div><span>Flat at root</span><output id="ext-flat">—</output></div>
+                <div><span>Root radius max</span><output id="ext-rr-max">—</output></div>
+                <div><span>Root radius min</span><output id="ext-rr-min">—</output></div>
+                <div><span>Height (basic)</span><output id="ext-height">—</output></div>
+              </div>
+            </div>
+            <div class="taper-only">
+              <div class="dim-row" style="justify-content:center"><span class="dim-name">Pipe diameter</span><output id="tp-pipedia">—</output></div>
+              <table class="dim-table">
+                <thead><tr><th></th><th>Pipe Face</th><th>Gage Notch</th></tr></thead>
+                <tbody>
+                  <tr><th>Major dia</th><td id="tp-maj-face">—</td><td id="tp-maj-gage">—</td></tr>
+                  <tr><th>Pitch dia</th><td id="tp-pd-face">—</td><td id="tp-pd-gage">—</td></tr>
+                  <tr><th>Minor dia</th><td id="tp-min-face">—</td><td id="tp-min-gage">—</td></tr>
+                </tbody>
+              </table>
+              <div class="mini-grid">
+                <div><span>Crest radius</span><output id="tp-rad-crest">—</output></div>
+                <div><span>Root radius</span><output id="tp-rad-root">—</output></div>
+                <div><span>Height (mean)</span><output id="tp-height">—</output></div>
+              </div>
             </div>
           </section>
 
           <section class="panel result" id="panel-internal">
             <h2>Internal Dimensions <span class="desig" id="desig-int">—</span></h2>
-            <table class="dim-table">
-              <thead><tr><th></th><th>Min</th><th>Max</th><th>Mean</th><th>Tol</th></tr></thead>
-              <tbody>
-                <tr><th>Minor dia</th><td id="int-min-min">—</td><td id="int-min-max">—</td><td id="int-min-mean">—</td><td id="int-min-tol">—</td></tr>
-                <tr><th>Pitch dia</th><td id="int-pd-min">—</td><td id="int-pd-max">—</td><td id="int-pd-mean">—</td><td id="int-pd-tol">—</td></tr>
-                <tr><th>Major dia</th><td id="int-maj-min">—</td><td id="int-maj-max">—</td><td></td><td></td></tr>
-              </tbody>
-            </table>
-            <div class="mini-grid">
-              <div><span>Flat at root</span><output id="int-flat">—</output></div>
-              <div><span>Height (basic)</span><output id="int-height">—</output></div>
+            <div class="std-only">
+              <table class="dim-table">
+                <thead><tr><th></th><th>Min</th><th>Max</th><th>Mean</th><th>Tol</th></tr></thead>
+                <tbody>
+                  <tr><th>Minor dia</th><td id="int-min-min">—</td><td id="int-min-max">—</td><td id="int-min-mean">—</td><td id="int-min-tol">—</td></tr>
+                  <tr><th>Pitch dia</th><td id="int-pd-min">—</td><td id="int-pd-max">—</td><td id="int-pd-mean">—</td><td id="int-pd-tol">—</td></tr>
+                  <tr><th>Major dia</th><td id="int-maj-min">—</td><td id="int-maj-max">—</td><td></td><td></td></tr>
+                </tbody>
+              </table>
+              <div class="mini-grid">
+                <div><span>Flat at root</span><output id="int-flat">—</output></div>
+                <div><span>Height (basic)</span><output id="int-height">—</output></div>
+              </div>
+            </div>
+            <div class="taper-only">
+              <table class="dim-table">
+                <thead><tr><th></th><th>Pipe End L1</th><th>Pipe Face</th></tr></thead>
+                <tbody>
+                  <tr><th>Minor dia</th><td id="tp-imin-l1">—</td><td id="tp-imin-face">—</td></tr>
+                </tbody>
+              </table>
+              <div class="mini-grid">
+                <div><span>Pitch (gage notch)</span><output id="tp-ipd-gage">—</output></div>
+                <div><span>Tap drill</span><output id="tp-tapdrill">—</output></div>
+                <div><span>Tap depth (ref)</span><output id="tp-tapdepth">—</output></div>
+              </div>
             </div>
           </section>
       </div>
@@ -73,7 +106,7 @@
             <button id="resetWire" type="button" class="btn small">Reset wire</button>
           </section>
 
-          <section class="panel result" id="panel-tap">
+          <section class="panel result std-only" id="panel-tap">
             <h2>Tap Drills</h2>
             <div class="radio-row">
               <label><input type="radio" name="tapType" value="cut" checked /> Cut</label>
@@ -86,6 +119,23 @@
               <tbody id="drill-rows"></tbody>
             </table>
           </section>
+
+        <section class="panel result taper-only" id="panel-pipe">
+          <h2>Pipe Thread Detail</h2>
+          <table class="dim-table">
+            <thead><tr><th></th><th>Crest</th><th>Root</th></tr></thead>
+            <tbody>
+              <tr><th>Flat (min–max)</th><td id="tp-flat-crest">—</td><td id="tp-flat-root">—</td></tr>
+              <tr><th>Truncation (min–max)</th><td id="tp-trunc-crest">—</td><td id="tp-trunc-root">—</td></tr>
+            </tbody>
+          </table>
+          <div class="mini-grid">
+            <div><span>L1 hand-tight</span><output id="tp-l1">—</output></div>
+            <div><span>L2 effective</span><output id="tp-l2">—</output></div>
+            <div><span>L3 wrench makeup</span><output id="tp-l3">—</output></div>
+            <div><span>L4 overall</span><output id="tp-l4">—</output></div>
+          </div>
+        </section>
 
         <section class="panel control" id="panel-input">
           <h2>Thread Type &amp; Size</h2>

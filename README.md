@@ -56,7 +56,7 @@ primary proof the formulas match the standard. 157 tests pass.
 | Whitworth (BSW/BSF) | BS 84:1956 | ✅ exact | ⚠️ provisional | 38 | Partial |
 | ISO Trapezoidal | ISO 2901 | ✅ exact | ⚠️ provisional | 14 | Partial |
 | US Buttress 7×45 / ISO 3×30 | ASME B1.9 / DIN 513 | ⚠️ approximate | ⚠️ provisional | 8 | Provisional |
-| NPT / NPTF (taper) | ASME B1.20.1 | ✅ B1.20.1 formulas | ⚠️ gauge-based, provisional | 26 | Partial |
+| NPT / NPTF (taper) | ASME B1.20.1 | ✅ validated vs 1/16-27 (E0/E1, pipe-face & gage-notch dims, flats, truncation, L1–L4) | ⚠️ gauge-based | 26 | **Validated geometry** |
 | NPSM / NPSL (straight) | ASME B1.20.1 | ✅ | ⚠️ provisional | 26 | Partial |
 | BSPT / BSPP | ISO 7-1 | ✅ 55° form | ⚠️ provisional | 22 | Partial |
 | UNM (miniature) | ASME B1.10 | ✅ (mm) | ⚠️ provisional | 14 | Partial |
@@ -73,7 +73,18 @@ toggle, allowance, basic thread height; **measurement over wires** (best/max/min
 MOW limits) with **user alternate-wire** recompute; **starts / pitch / lead / lead-or-helix angle**;
 length-of-engagement; **tap drills** with cut/form-tap selector, **thread-percent** selector and a
 nearest-standard-drill table (number/letter/fractional/metric) showing resulting % thread; a
-**coating / polishing** panel (before/after major & pitch, 4× rule); inch/metric display; print.
+**coating / polishing** panel (before/after major & pitch, 4× rule, ± thickness-tolerance band,
+internal/external); inch/metric display; print; **Reset all to default**.
+
+**Tapered pipe threads (NPT/NPTF/BSPT)** get a dedicated layout: pipe-face & gauge-notch values for
+major/pitch/minor, pipe diameter, crest/root flats & truncation, internal pipe-end-L1/pipe-face
+minor, gauge-notch pitch, tap drill + reference depth, and engagement lengths L1–L4 — with thread
+percent, length-of-engagement and form-tap controls automatically disabled.
+
+UI conveniences: editable inputs are visually distinct from read-only outputs; yellow highlight marks
+any value changed from default (alternate wire, multi-start/length-of-engagement, coating); the
+alternate measuring wire updates the main MOW directly, and a "use coating/polish" option recomputes
+MOW from the pre-process pitch diameter.
 
 ## Roadmap to full parity with ME ThreadPal
 
