@@ -158,6 +158,8 @@ export interface CoatingInput {
   hand: ThreadHand;
   /** Radial coating thickness per surface (native units). Positive adds material. */
   thickness: number;
+  /** +/- tolerance band on the radial thickness (native units). Default 0. */
+  tolerance?: number;
   /** "coating" adds material; "polishing" removes it. */
   mode: "coating" | "polishing";
 }

@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ThreadBuddy — Screw Thread Calculator</title>
-    <script type="module" crossorigin src="./assets/index--rvKF3xd.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-B3WobMSf.css">
+    <script type="module" crossorigin src="./assets/index-BTO_mjod.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CeglrgtJ.css">
   </head>
   <body>
     <header class="app-header">
@@ -68,9 +68,9 @@
                 <tr><th>Constant</th><td id="wire-const">—</td></tr>
               </tbody>
             </table>
-            <label class="field"><span>Alternate wire</span><input id="altWire" type="number" step="any" placeholder="best" /></label>
-            <div class="dim-row"><span class="dim-name">Alt MOW max/min</span><output id="alt-mow">—</output></div>
-            <button id="resetWire" type="button" class="btn small">Reset to best</button>
+            <label class="field"><span>Alternate wire (updates MOW above)</span><input id="altWire" type="number" step="any" placeholder="best" /></label>
+            <label class="check"><input type="checkbox" id="useCoating" /> Use coating/polish</label>
+            <button id="resetWire" type="button" class="btn small">Reset wire</button>
           </section>
 
           <section class="panel result" id="panel-tap">
@@ -127,17 +127,21 @@
             <label><input type="radio" name="anglename" value="helix" /> Helix</label>
           </div>
           <label class="check"><input type="checkbox" id="sharpRoot" /> Sharp root</label>
-          <button id="printBtn" type="button" class="btn">Print report</button>
+          <div class="btn-row">
+            <button id="resetAll" type="button" class="btn">Reset all to default</button>
+            <button id="printBtn" type="button" class="btn">Print report</button>
+          </div>
         </section>
 
         <section class="panel control span2" id="panel-coating">
           <h2>Coating / Polishing</h2>
           <div class="custom-grid">
-            <div class="radio-row">
-              <label><input type="radio" name="coatMode" value="coating" checked /> Coating</label>
-              <label><input type="radio" name="coatMode" value="polishing" /> Polishing</label>
-            </div>
             <label class="field inline"><span>Thickness (radial)</span><input id="coatThk" type="number" step="any" placeholder="0" /></label>
+            <label class="field inline"><span>Tolerance (±)</span><input id="coatTol" type="number" step="any" placeholder="0" /></label>
+          </div>
+          <div class="radio-row">
+            <label><input type="radio" name="coatMode" value="coating" checked /> Coating</label>
+            <label><input type="radio" name="coatMode" value="polishing" /> Polishing</label>
           </div>
           <div class="radio-row">
             <label><input type="radio" name="coatHand" value="external" checked /> External</label>

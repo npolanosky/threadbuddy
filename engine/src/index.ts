@@ -12,6 +12,7 @@ import { derivePipe } from "./core/pipe.js";
 export * from "./types.js";
 export { calculateCoating } from "./core/coating.js";
 export { CATALOG, catalogByFamily, type CatalogEntry } from "./data/catalog.js";
+export { bestWire, measurementOverWires, wireConstant } from "./core/geometry.js";
 
 export function calculate(input: ThreadInput): ThreadResult {
   switch (input.family) {

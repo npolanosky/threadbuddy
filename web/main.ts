@@ -4,8 +4,13 @@
  * MOW, tap-drill table, coating) reproducing the layout of the original ME ThreadPal.
  */
 
-import { calculate, calculateCoating } from "../engine/src/index.js";
-import type { ThreadFamily, ThreadResult, Limits } from "../engine/src/index.js";
+import {
+  calculate,
+  calculateCoating,
+  measurementOverWires,
+  wireConstant,
+} from "../engine/src/index.js";
+import type { ThreadFamily, ThreadResult, Limits, CoatingResult } from "../engine/src/index.js";
 import { CATALOG, type CatalogEntry } from "../engine/src/data/catalog.js";
 
 interface Variant { code: ThreadFamily; label: string; }
@@ -108,7 +113,7 @@ function populateSizes(): void {
   sel.add(new Option("— Custom / type below —", "custom"));
   const sizes = currentSizes();
   sizes.forEach((e, idx) => sel.add(new Option(e.label, String(idx))));
-  const def = sizes.findIndex((e) => e.label.startsWith("1/2-13") || e.label.startsWith("M10 x 1.5"));
+  const def = sizes.findIndex((e) => e.label.startsWith("1/4-20") || e.label.startsWith("M10 x 1.5"));
   if (def >= 0) { sel.value = String(def); applySize(sizes[def]); }
   else if (sizes.length) { sel.value = "0"; applySize(sizes[0]); }
   else sel.value = "custom";
@@ -140,6 +145,13 @@ function conv(v: number): number {
   if (group.units === d) return v;
   return group.units === "inch" ? v * 25.4 : v / 25.4;
 }
+/** Convert a user-entered display-unit value back to the family's native unit. */
+function convToNative(v: number): number {
+  if (!Number.isFinite(v)) return v;
+  const d = displayUnits();
+  if (group.units === d) return v;
+  return group.units === "inch" ? v / 25.4 : v * 25.4;
+}
 function fmt(v: number | undefined): string {
   if (v === undefined || !Number.isFinite(v)) return "—";
   return conv(v).toFixed(displayUnits() === "metric" ? 3 : 4);
@@ -170,9 +182,14 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("ext-rr-max", fmt(rExt.rootRadius?.max));
     setText("ext-rr-min", fmt(rExt.rootRadius?.min));
     setText("ext-height", fmt(rExt.threadHeight));
-    renderWires(rExt);
   }
+  // Coating for the external thread feeds the optional MOW "use coating" recompute.
+  const coatExt = rExt ? getCoating(rExt, "external") : null;
+  if (rExt) renderWires(rExt, coatExt);
   renderCoating(rExt, rInt);
+  // Highlight Starts/Lead panel when multi-start or a custom length of engagement is set.
+  const startsChanged = (src.starts ?? 1) !== 1 || $<HTMLInputElement>("loe").value.trim() !== "";
+  $("panel-starts").classList.toggle("changed", startsChanged);
   if (rInt) {
     setText("desig-int", rInt.designation);
     setText("int-min-min", fmt(rInt.minorDiameter.internal?.min));
@@ -203,19 +220,54 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
   setText("standard-src", "Governing standard: " + (STANDARD_SRC[variant] ?? "—"));
 }
 
-function renderWires(r: ThreadResult): void {
+function renderWires(r: ThreadResult, coatExt: CoatingResult | null): void {
   const w = r.wires;
-  setText("mow-max", fmt(w?.mow.max));
-  setText("mow-min", fmt(w?.mow.min));
-  setText("wire-best", fmt(w?.bestWire));
-  setText("wire-max", fmt(w?.maxWire));
-  setText("wire-min", fmt(w?.minWire));
-  setText("wire-const", fmt(w?.constantBest));
-  const alt = $("alt-mow");
-  if (w?.alternate) {
-    alt.textContent = `${fmt(w.alternate.mow.max)} / ${fmt(w.alternate.mow.min)}`;
-    alt.classList.toggle("warn", w.alternate.belowMajor);
-  } else { alt.textContent = "—"; alt.classList.remove("warn"); }
+  const maxBox = $("mow-max");
+  const minBox = $("mow-min");
+  if (!w || !r.pitchDiameter.external) {
+    ["mow-max", "mow-min", "wire-best", "wire-max", "wire-min", "wire-const"].forEach((id) => setText(id, "—"));
+    maxBox.classList.remove("changed");
+    minBox.classList.remove("changed");
+    return;
+  }
+  setText("wire-best", fmt(w.bestWire));
+  setText("wire-max", fmt(w.maxWire));
+  setText("wire-min", fmt(w.minWire));
+
+  // Effective wire: user alternate (display→native) if set, else the best wire.
+  const altRaw = parseFloat($<HTMLInputElement>("altWire").value);
+  const altSet = Number.isFinite(altRaw) && altRaw > 0;
+  const wire = altSet ? convToNative(altRaw) : w.bestWire;
+
+  // Effective pitch diameter: coating-adjusted (pre-process) limits if "use coating" is on.
+  const useCoat = $<HTMLInputElement>("useCoating").checked && !!coatExt;
+  const pd = useCoat ? coatExt!.before.pitch : r.pitchDiameter.external;
+  const angle = r.threadAngleDeg;
+
+  const mowMax = measurementOverWires(pd.max, wire, r.pitch, angle);
+  const mowMin = measurementOverWires(pd.min, wire, r.pitch, angle);
+  setText("mow-max", fmt(mowMax));
+  setText("mow-min", fmt(mowMin));
+  setText("wire-const", fmt(wireConstant(wire, r.pitch, angle)));
+
+  const changed = altSet || useCoat;
+  maxBox.classList.toggle("changed", changed);
+  minBox.classList.toggle("changed", changed);
+}
+
+/** Build a coating result for a result+hand from the current coating inputs, or null. */
+function getCoating(r: ThreadResult | null, hand: "external" | "internal"): CoatingResult | null {
+  if (!r) return null;
+  const thk = convToNative(parseFloat($<HTMLInputElement>("coatThk").value));
+  if (!Number.isFinite(thk) || thk <= 0) return null;
+  const tolRaw = convToNative(parseFloat($<HTMLInputElement>("coatTol").value));
+  const present = hand === "external" ? r.majorDiameter.external : r.majorDiameter.internal;
+  if (!present || !Number.isFinite(present.max)) return null;
+  return calculateCoating({
+    result: r, hand, thickness: thk,
+    tolerance: Number.isFinite(tolRaw) ? tolRaw : 0,
+    mode: radio("coatMode") as "coating" | "polishing",
+  });
 }
 
 function renderTapDrill(r: ThreadResult): void {
@@ -234,25 +286,24 @@ function renderTapDrill(r: ThreadResult): void {
 }
 
 function renderCoating(rExt: ThreadResult | null, rInt: ThreadResult | null): void {
-  const thk = parseFloat($<HTMLInputElement>("coatThk").value);
   const ids = ["coat-maj-bmax", "coat-maj-bmin", "coat-maj-amax", "coat-maj-amin",
     "coat-pd-bmax", "coat-pd-bmin", "coat-pd-amax", "coat-pd-amin"];
   const hand = radio("coatHand") as "external" | "internal";
-  const r = hand === "external" ? rExt : rInt;
-  const present = hand === "external" ? r?.majorDiameter.external : r?.majorDiameter.internal;
-  if (!r || !Number.isFinite(thk) || thk <= 0 || !present) {
+  const c = getCoating(hand === "external" ? rExt : rInt, hand);
+  if (!c) {
     ids.forEach((id) => setText(id, "—"));
+    $("panel-coating").classList.remove("changed");
     return;
   }
-  const c = calculateCoating({ result: r, hand, thickness: thk, mode: radio("coatMode") as "coating" | "polishing" });
   setText("coat-maj-bmax", fmt(c.before.major.max)); setText("coat-maj-bmin", fmt(c.before.major.min));
   setText("coat-maj-amax", fmt(c.after.major.max)); setText("coat-maj-amin", fmt(c.after.major.min));
   setText("coat-pd-bmax", fmt(c.before.pitch.max)); setText("coat-pd-bmin", fmt(c.before.pitch.min));
   setText("coat-pd-amax", fmt(c.after.pitch.max)); setText("coat-pd-amin", fmt(c.after.pitch.min));
+  $("panel-coating").classList.add("changed");
 }
 
 // ---- Inputs ----
-function readInput(classOfFit: string, withAltWire: boolean) {
+function readInput(classOfFit: string) {
   const major = parseFloat($<HTMLInputElement>("major").value);
   const starts = parseInt($<HTMLInputElement>("starts").value || "1", 10);
   const loe = parseFloat($<HTMLInputElement>("loe").value);
@@ -266,10 +317,6 @@ function readInput(classOfFit: string, withAltWire: boolean) {
   if (Number.isFinite(percent)) base.targetPercent = percent;
   if (group.units === "metric") base.pitch = parseFloat($<HTMLInputElement>("pitch").value);
   else base.tpi = parseFloat($<HTMLInputElement>("tpi").value);
-  if (withAltWire) {
-    const aw = parseFloat($<HTMLInputElement>("altWire").value);
-    if (Number.isFinite(aw) && aw > 0) base.alternateWire = group.units === displayUnits() ? aw : (displayUnits() === "metric" ? aw / 25.4 : aw * 25.4);
-  }
   return base;
 }
 
@@ -278,10 +325,30 @@ function recompute(): void {
   if (!Number.isFinite(major) || major <= 0) return;
   let rExt: ThreadResult | null = null;
   let rInt: ThreadResult | null = null;
-  try { rExt = calculate(readInput($<HTMLSelectElement>("classExternal").value, true)); } catch (e) { console.warn(e); }
-  try { rInt = calculate(readInput($<HTMLSelectElement>("classInternal").value, false)); } catch (e) { console.warn(e); }
+  try { rExt = calculate(readInput($<HTMLSelectElement>("classExternal").value)); } catch (e) { console.warn(e); }
+  try { rInt = calculate(readInput($<HTMLSelectElement>("classInternal").value)); } catch (e) { console.warn(e); }
   const src = rExt ?? rInt;
   if (src) render(rExt, rInt, src);
+}
+
+/** Reset every control to its default state (Unified 1/4-20 UNC, 2A/2B, inch). */
+function resetToDefaults(): void {
+  $<HTMLSelectElement>("family").value = "unified";
+  $<HTMLInputElement>("starts").value = "1";
+  $<HTMLInputElement>("loe").value = "";
+  $<HTMLInputElement>("percent").value = "75";
+  $<HTMLInputElement>("altWire").value = "";
+  $<HTMLInputElement>("coatThk").value = "";
+  $<HTMLInputElement>("coatTol").value = "";
+  $<HTMLInputElement>("sharpRoot").checked = false;
+  $<HTMLInputElement>("useCoating").checked = false;
+  const pick = (name: string, val: string): void => {
+    const el = document.querySelector(`input[name="${name}"][value="${val}"]`) as HTMLInputElement | null;
+    if (el) el.checked = true;
+  };
+  pick("units", "inch"); pick("anglename", "lead"); pick("tapType", "cut");
+  pick("coatMode", "coating"); pick("coatHand", "external");
+  onFamilyChange(); // repopulates variants/classes/sizes (defaults to 1/4-20, 2A/2B) and recomputes
 }
 
 // ---- Wiring ----
@@ -307,15 +374,16 @@ function init(): void {
     if (v !== "custom") applySize(currentSizes()[parseInt(v, 10)]);
     recompute();
   });
-  ["major", "tpi", "pitch", "starts", "loe", "percent", "altWire", "coatThk"].forEach((id) =>
+  ["major", "tpi", "pitch", "starts", "loe", "percent", "altWire", "coatThk", "coatTol"].forEach((id) =>
     $(id).addEventListener("input", () => {
       if (["major", "tpi", "pitch"].includes(id)) $<HTMLSelectElement>("size").value = "custom";
       recompute();
     }));
   ["classExternal", "classInternal"].forEach((id) => $(id).addEventListener("change", recompute));
-  document.querySelectorAll('input[name="units"],input[name="anglename"],input[name="tapType"],input[name="coatMode"],input[name="coatHand"],#sharpRoot')
+  document.querySelectorAll('input[name="units"],input[name="anglename"],input[name="tapType"],input[name="coatMode"],input[name="coatHand"],#sharpRoot,#useCoating')
     .forEach((el) => el.addEventListener("change", recompute));
-  $("resetWire").addEventListener("click", () => { $<HTMLInputElement>("altWire").value = ""; recompute(); });
+  $("resetWire").addEventListener("click", () => { $<HTMLInputElement>("altWire").value = ""; $<HTMLInputElement>("useCoating").checked = false; recompute(); });
+  $("resetAll").addEventListener("click", resetToDefaults);
   $("printBtn").addEventListener("click", () => window.print());
 }
 
