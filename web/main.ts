@@ -200,7 +200,10 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
   const taper = rExt?.taper ?? rInt?.taper ?? null;
   document.body.classList.toggle("taper", !!taper);
   $<HTMLInputElement>("loe").disabled = !!taper;
-  if (taper) renderTaper(taper);
+  if (taper) {
+    renderTaper(taper);
+    setText("tp-thread-angle", `${src.threadAngleDeg}° form`);
+  }
   if (rInt) {
     setText("desig-int", rInt.designation);
     setText("int-min-min", fmt(rInt.minorDiameter.internal?.min));
@@ -293,6 +296,7 @@ function renderTaper(t: NonNullable<ThreadResult["taper"]>): void {
   setText("tp-l2", fmt(t.lengths.L2));
   setText("tp-l3", fmt(t.lengths.L3));
   setText("tp-l4", fmt(t.lengths.L4));
+  setText("tp-taper-angle", Number.isFinite(t.taperAngleDeg) ? t.taperAngleDeg.toFixed(3) + "° / side" : "—");
   // 2-wire measurement over wires at the gauge notch.
   if (t.mowGageNotch !== undefined) {
     setText("mow-max", fmt(t.mowGageNotch));
@@ -319,20 +323,37 @@ function renderTapDrill(r: ThreadResult): void {
   setText("tap-theo", fmt(r.tapDrillInfo?.theoretical));
   const tbody = $("drill-rows");
   tbody.innerHTML = "";
+  const info = r.tapDrillInfo;
+  if (!info) { tbody.innerHTML = `<tr><td colspan="3">—</td></tr>`; return; }
   const metric = displayUnits() === "metric";
-  for (const c of r.tapDrillInfo?.candidates ?? []) {
+  const nativeVal = (c: (typeof info.candidates)[number]): number => (r.units === "metric" ? c.mm : c.inch);
+  // Recommended = the candidate closest to the theoretical hole diameter.
+  let recIdx = 0;
+  let best = Infinity;
+  info.candidates.forEach((c, i) => {
+    const d = Math.abs(nativeVal(c) - info.theoretical);
+    if (d < best) { best = d; recIdx = i; }
+  });
+  const rows: HTMLTableRowElement[] = [];
+  info.candidates.forEach((c, i) => {
     const tr = document.createElement("tr");
     const dia = metric ? c.mm.toFixed(3) : c.inch.toFixed(4);
     tr.innerHTML = `<td>${c.name}</td><td>${dia}</td><td>${c.percent}%</td>`;
     if (c.percent >= 65 && c.percent <= 80) tr.classList.add("good-row");
+    if (i === recIdx) tr.classList.add("recommended");
     tbody.appendChild(tr);
-  }
-  if (!r.tapDrillInfo) tbody.innerHTML = `<tr><td colspan="3">—</td></tr>`;
+    rows.push(tr);
+  });
+  // Center the recommended drill in the scroll viewport.
+  const scroll = document.getElementById("drill-scroll");
+  const rec = rows[recIdx];
+  if (scroll && rec) scroll.scrollTop = Math.max(0, rec.offsetTop - (scroll.clientHeight - rec.offsetHeight) / 2);
 }
 
 function renderCoating(rExt: ThreadResult | null, rInt: ThreadResult | null): void {
   const ids = ["coat-maj-bmax", "coat-maj-bmin", "coat-maj-amax", "coat-maj-amin",
-    "coat-pd-bmax", "coat-pd-bmin", "coat-pd-amax", "coat-pd-amin"];
+    "coat-pd-bmax", "coat-pd-bmin", "coat-pd-amax", "coat-pd-amin",
+    "coat-min-bmax", "coat-min-bmin", "coat-min-amax", "coat-min-amin"];
   const hand = radio("coatHand") as "external" | "internal";
   const c = getCoating(hand === "external" ? rExt : rInt, hand);
   if (!c) {
@@ -344,6 +365,8 @@ function renderCoating(rExt: ThreadResult | null, rInt: ThreadResult | null): vo
   setText("coat-maj-amax", fmt(c.after.major.max)); setText("coat-maj-amin", fmt(c.after.major.min));
   setText("coat-pd-bmax", fmt(c.before.pitch.max)); setText("coat-pd-bmin", fmt(c.before.pitch.min));
   setText("coat-pd-amax", fmt(c.after.pitch.max)); setText("coat-pd-amin", fmt(c.after.pitch.min));
+  setText("coat-min-bmax", fmt(c.before.minor.max)); setText("coat-min-bmin", fmt(c.before.minor.min));
+  setText("coat-min-amax", fmt(c.after.minor.max)); setText("coat-min-amin", fmt(c.after.minor.min));
   $("panel-coating").classList.add("changed");
 }
 

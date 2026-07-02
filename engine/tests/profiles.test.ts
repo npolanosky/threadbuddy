@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculate } from "../src/index.js";
+import { calculate, calculateCoating } from "../src/index.js";
 
 /**
  * Profile-differentiation fixtures: ensure J profiles, UNR, and the straight pipe families are
@@ -37,6 +37,34 @@ describe("UN / UNR / UNJ — Unified (1/4-20)", () => {
   it("UNR internal minor equals UN; UNJ internal minor is increased", () => {
     expect(unr.minorDiameter.internal!.min).toBeCloseTo(un.minorDiameter.internal!.min, 4);
     expect(unj.minorDiameter.internal!.min).toBeGreaterThan(un.minorDiameter.internal!.min);
+  });
+});
+
+describe("Unified internal minor diameter tolerance (ASME B1.1)", () => {
+  const r = calculate({ family: "UN", majorDiameter: 0.5, tpi: 13, classOfFit: "2B" });
+  it("1/2-13 2B internal minor max is now populated (~0.4336)", () => {
+    expect(r.minorDiameter.internal!.max).toBeCloseTo(0.4336, 3);
+    expect(r.minorDiameter.internal!.max).toBeGreaterThan(r.minorDiameter.internal!.min);
+  });
+});
+
+describe("Acme nut (internal) dimensions — 1-5 GP", () => {
+  const r = calculate({ family: "ACME", majorDiameter: 1.0, tpi: 5, classOfFit: "2G" });
+  it("nut minor min = 0.800 (D - p)", () => expect(r.minorDiameter.internal!.min).toBeCloseTo(0.8, 3));
+  it("nut major min = 1.020 (D + 0.020 clearance)", () => expect(r.majorDiameter.internal!.min).toBeCloseTo(1.02, 3));
+  it("nut pitch min = 0.900 (basic)", () => expect(r.pitchDiameter.internal!.min).toBeCloseTo(0.9, 3));
+  it("nut minor/major maxima are populated (tolerances present)", () => {
+    expect(Number.isFinite(r.minorDiameter.internal!.max)).toBe(true);
+    expect(Number.isFinite(r.majorDiameter.internal!.max)).toBe(true);
+  });
+});
+
+describe("coating includes the minor diameter", () => {
+  const r = calculate({ family: "UN", majorDiameter: 0.5, tpi: 13, classOfFit: "2A" });
+  const c = calculateCoating({ result: r, hand: "external", thickness: 0.0003, mode: "coating" });
+  it("computes before/after minor, growing by 2·t", () => {
+    expect(Number.isFinite(c.after.minor.max)).toBe(true);
+    expect(c.after.minor.max - c.before.minor.max).toBeCloseTo(0.0006, 4);
   });
 });
 

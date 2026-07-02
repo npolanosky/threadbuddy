@@ -97,6 +97,8 @@ function deriveTaperPipe(input: ThreadInput): ThreadResult {
     truncation: { crest: truncCrest, root: truncRoot },
     lengths: { L1: roundInch(L1), L2: roundInch(L2), L3: roundInch(L3), L4: roundInch(L4) },
     heightMean: roundInch(heightMean),
+    taperAngleDeg: Math.atan(0.03125) * (180 / Math.PI), // 1:16 taper -> half-angle from axis
+
     mowGageNotch: roundInch(measurementOverWires(E1, bestWire(p, angle), p, angle)),
   };
 

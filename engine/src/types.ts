@@ -176,6 +176,8 @@ export interface TaperResult {
   /** Engagement lengths: L1 hand-tight, L2 effective, L3 wrench makeup, L4 overall. */
   lengths: { L1: number; L2: number; L3: number; L4: number };
   heightMean: number;
+  /** Taper half-angle from the axis, degrees (1:16 taper -> atan(1/32) = 1.7899°). */
+  taperAngleDeg: number;
   /** Measurement over wires at the gauge notch (informational). */
   mowGageNotch?: number;
 }
@@ -198,8 +200,8 @@ export interface CoatingResult {
   pitchDiameterDelta: number;
   /** Major-diameter change applied (2x thickness). */
   majorDiameterDelta: number;
-  before: { major: Limits; pitch: Limits };
-  after: { major: Limits; pitch: Limits };
+  before: { major: Limits; pitch: Limits; minor: Limits };
+  after: { major: Limits; pitch: Limits; minor: Limits };
   notes: string[];
 }
 

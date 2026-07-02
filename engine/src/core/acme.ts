@@ -31,7 +31,6 @@ export function deriveAcme(input: ThreadInput): ThreadResult {
   const p = input.pitch ?? 1 / tpi;
   const stub = input.family === "STUB_ACME";
   const cls = input.classOfFit.toUpperCase();
-  const external = cls.endsWith("G") || cls.endsWith("E"); // 2G/3G/4G external; 2C/3C/4C nut... handled below
   const starts = input.starts ?? 1;
 
   const h = (stub ? 0.3 : 0.5) * p; // basic thread height
@@ -51,21 +50,22 @@ export function deriveAcme(input: ThreadInput): ThreadResult {
   const pdTolFactor = clsNum === 2 ? 1 : clsNum === 3 ? 0.71 : 0.5;
   const pdTol = roundInch(pdTolBase * pdTolFactor);
 
-  if (external) {
-    const pdMax = roundInch(basicPitch - allowance);
-    pitchDiameter.external = { max: pdMax, min: roundInch(pdMax - pdTol) };
-    majorDiameter.external = { max: roundInch(D - allowance), min: roundInch(D - allowance - 0.01 * p) };
-    minorDiameter.external = { max: roundInch(basicMinor - allowance), min: NaN };
-    notes.push("Acme pitch-diameter tolerance provisional (pending full ASME B1.5 table validation).");
-  } else {
-    pitchDiameter.internal = { max: roundInch(basicPitch + pdTol), min: roundInch(basicPitch) };
-    minorDiameter.internal = { max: NaN, min: roundInch(basicMinor) };
-    majorDiameter.internal = { max: NaN, min: roundInch(D + 0.01 * p) };
-    notes.push("Acme tolerance provisional (pending full ASME B1.5 table validation).");
-  }
+  // Acme classes (2G/3G/4G) apply to both members, so compute the screw and the nut together.
+  // External (screw): allowance applied. Internal (nut): no allowance; major cleared 0.020"
+  // (0.010" radial) over the screw crest per ASME B1.5.
+  const pdMaxExt = roundInch(basicPitch - allowance);
+  pitchDiameter.external = { max: pdMaxExt, min: roundInch(pdMaxExt - pdTol) };
+  majorDiameter.external = { max: roundInch(D - allowance), min: roundInch(D - allowance - 0.01 * p) };
+  minorDiameter.external = { max: roundInch(basicMinor - allowance), min: NaN };
+
+  pitchDiameter.internal = { max: roundInch(basicPitch + pdTol), min: roundInch(basicPitch) };
+  minorDiameter.internal = { max: roundInch(basicMinor + pdTol), min: roundInch(basicMinor) };
+  const nutMajorMin = roundInch(D + 0.02);
+  majorDiameter.internal = { max: roundInch(nutMajorMin + pdTol), min: nutMajorMin };
+  notes.push("Acme screw & nut dimensions per ASME B1.5; tolerances provisional.");
 
   let wires: ThreadResult["wires"];
-  if (external && pitchDiameter.external) {
+  if (pitchDiameter.external) {
     const w = bestWire(p, ACME_ANGLE);
     const e = pitchDiameter.external;
     const majMax = majorDiameter.external?.max ?? D;
@@ -103,7 +103,7 @@ export function deriveAcme(input: ThreadInput): ThreadResult {
     helixAngleDeg: 90 - la,
     fundamentalHeight: fundamentalHeight(p, ACME_ANGLE),
     threadHeight: roundInch(h),
-    allowance: external ? allowance : 0,
+    allowance,
     majorDiameter,
     pitchDiameter,
     minorDiameter,

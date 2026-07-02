@@ -41,6 +41,9 @@ describe("1/16-27 NPT taper pipe", () => {
     expect(t.lengths.L2).toBeCloseTo(0.2611, 3);
     expect(t.lengths.L4).toBeCloseTo(0.2875, 3);
   });
+  it("taper half-angle = atan(1/32) = 1.790° per side", () => {
+    expect(t.taperAngleDeg).toBeCloseTo(1.7899, 3);
+  });
 });
 
 describe("NPT vs NPTF are handled distinctly (ASME B1.20.1 vs B1.20.3)", () => {

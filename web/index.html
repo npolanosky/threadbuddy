@@ -72,6 +72,8 @@
                 <div><span>Crest radius</span><output id="tp-rad-crest">—</output></div>
                 <div><span>Root radius</span><output id="tp-rad-root">—</output></div>
                 <div><span>Height (mean)</span><output id="tp-height">—</output></div>
+                <div><span>Taper angle</span><output id="tp-taper-angle">—</output></div>
+                <div><span>Thread angle</span><output id="tp-thread-angle">—</output></div>
               </div>
             </div>
           </section>
@@ -111,10 +113,12 @@
         <div class="col-aside">
           <section class="panel control" id="panel-display">
             <h2>Display Options</h2>
+            <div class="opt-title">Length units</div>
             <div class="radio-row">
               <label><input type="radio" name="units" value="inch" checked /> Inch</label>
               <label><input type="radio" name="units" value="metric" /> Metric</label>
             </div>
+            <div class="opt-title">Thread angle units</div>
             <div class="radio-row">
               <label><input type="radio" name="anglename" value="lead" checked /> Lead</label>
               <label><input type="radio" name="anglename" value="helix" /> Helix</label>
@@ -183,10 +187,12 @@
           </div>
           <label class="field inline"><span>% thread</span><input id="percent" type="number" step="1" value="75" min="1" max="100" /></label>
           <div class="dim-row"><span class="dim-name">Hole (theoretical)</span><output id="tap-theo">—</output></div>
-          <table class="dim-table compact drill-table">
-            <thead><tr><th>Drill</th><th>Dia</th><th>%</th></tr></thead>
-            <tbody id="drill-rows"></tbody>
-          </table>
+          <div class="drill-scroll" id="drill-scroll">
+            <table class="dim-table compact drill-table">
+              <thead><tr><th>Drill</th><th>Dia</th><th>%</th></tr></thead>
+              <tbody id="drill-rows"></tbody>
+            </table>
+          </div>
         </section>
 
         <section class="panel result taper-only" id="panel-pipe">
@@ -244,6 +250,7 @@
             <tbody>
               <tr><th>Major</th><td id="coat-maj-bmax">—</td><td id="coat-maj-bmin">—</td><td id="coat-maj-amax">—</td><td id="coat-maj-amin">—</td></tr>
               <tr><th>Pitch</th><td id="coat-pd-bmax">—</td><td id="coat-pd-bmin">—</td><td id="coat-pd-amax">—</td><td id="coat-pd-amin">—</td></tr>
+              <tr><th>Minor</th><td id="coat-min-bmax">—</td><td id="coat-min-bmin">—</td><td id="coat-min-amax">—</td><td id="coat-min-amin">—</td></tr>
             </tbody>
           </table>
           <p class="src" id="coat-note">Adds material on the selected hand; 4× rule for 60° pitch diameter.</p>

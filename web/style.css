@@ -143,7 +143,14 @@ body {
 .field.inline { flex-direction: row; align-items: center; justify-content: space-between; }
 .field.inline input { max-width: 90px; }
 .drill-table td { font-size: 12px; }
+/* Scrollable tap-drill list, centered on the recommended range. */
+.drill-scroll { max-height: 172px; overflow-y: auto; border: 1px solid var(--value-border); border-radius: 4px; margin-top: 6px; }
+.drill-scroll .dim-table { margin: 0; width: 100%; }
+.drill-scroll thead th { position: sticky; top: 0; background: var(--result-panel); z-index: 1; }
+.opt-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin: 8px 0 2px; }
 .good-row td { background: #d7e8cf; font-weight: 600; }
+.drill-table tr.recommended td { background: #b7d7a8 !important; font-weight: 700; }
+.drill-table tr.recommended td:first-child { border-left: 3px solid var(--accent); }
 .btn.small { padding: 4px 8px; font-size: 12px; }
 
 .field { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; font-size: 12px; }

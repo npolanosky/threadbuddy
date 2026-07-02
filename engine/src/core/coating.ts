@@ -24,6 +24,7 @@ export function calculateCoating(input: CoatingInput): CoatingResult {
 
   const major = hand === "external" ? result.majorDiameter.external : result.majorDiameter.internal;
   const pitch = hand === "external" ? result.pitchDiameter.external : result.pitchDiameter.internal;
+  const minor = hand === "external" ? result.minorDiameter.external : result.minorDiameter.internal;
 
   if (!major || !pitch || !Number.isFinite(major.max) || !Number.isFinite(pitch.max)) {
     notes.push("Coating requires computed limits for the selected hand.");
@@ -31,14 +32,18 @@ export function calculateCoating(input: CoatingInput): CoatingResult {
     return {
       pitchDiameterDelta: pdDelta,
       majorDiameterDelta: majDelta,
-      before: { major: zero, pitch: zero },
-      after: { major: zero, pitch: zero },
+      before: { major: zero, pitch: zero, minor: zero },
+      after: { major: zero, pitch: zero, minor: zero },
       notes,
     };
   }
 
+  // Minor (root) diameter changes by the same 2*t as the crest; fall back to NaN limits when the
+  // engine only reports one bound for this hand.
+  const minorLimits: Limits = minor ?? { max: NaN, min: NaN };
+
   // "after" = the finished thread = the nominal computed limits.
-  const after = { major, pitch };
+  const after = { major, pitch, minor: minorLimits };
   // "before" (pre-process) window must guarantee the finished part is in tolerance for ANY
   // actual thickness within [t-tol, t+tol]. With delta(t) = sign*F*t evaluated at the band ends:
   //   before.max = after.max - max(deltaLow, deltaHigh)
@@ -46,6 +51,7 @@ export function calculateCoating(input: CoatingInput): CoatingResult {
   const before = {
     major: beforeWindow(major, sign, CREST_FACTOR, thickness, tol),
     pitch: beforeWindow(pitch, sign, PD_FACTOR, thickness, tol),
+    minor: beforeWindow(minorLimits, sign, CREST_FACTOR, thickness, tol),
   };
 
   if (tol > 0 && before.pitch.max < before.pitch.min) {

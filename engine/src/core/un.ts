@@ -113,8 +113,10 @@ export function deriveUN(input: ThreadInput): ThreadResult {
     const pdMin = roundInch(basicPitch);
     pitchDiameter.internal = { max: roundInch(pdMin + pdTol), min: pdMin } as Limits;
     const minorMin = roundInch(basicMinorInternal);
-    minorDiameter.internal = { max: NaN, min: minorMin } as Limits;
-    notes.push("Internal minor diameter max tolerance per ASME B1.1 — provisional.");
+    // ASME B1.1 internal minor-diameter tolerance (same for classes 1B/2B/3B).
+    const minorTol = roundInch(0.25 * p - 0.4 * p * p);
+    minorDiameter.internal = { max: roundInch(minorMin + minorTol), min: minorMin } as Limits;
+    // Internal major diameter is a clearance dimension: min = basic major, no specified maximum.
     majorDiameter.internal = { max: NaN, min: roundInch(D) } as Limits;
   }
 

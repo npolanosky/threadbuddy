@@ -20,7 +20,7 @@ export function buildTapDrillInfo(
     tapType,
     targetPercent,
     theoretical,
-    candidates: nearestDrills(theoretical, major, pitch, tapType, units),
+    candidates: nearestDrills(theoretical, major, pitch, tapType, units, 12),
   };
 }
 
