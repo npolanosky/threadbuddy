@@ -38,7 +38,7 @@ flags any value that is provisional.
 | NPSM / NPSL (straight) | ASME B1.20.1 | Geometry | distinct: NPSM at NPT gauge plane (E1), NPSL = E1 + P/4 (validated vs 1/2-14) |
 | BSPT / BSPP | ISO 7-1 | Provisional | 55° form; ISO 7 formulas pending |
 | UNM (miniature) | ASME B1.10 | Geometry | millimetre-based |
-| STI — Unified / Metric | manufacturer ref | Provisional | standard sizes added (default 1/4-20, M6×1); base series, insert oversize tables pending |
+| STI — Unified / Metric | ASME B18.29.1 / B18.29.2M | Validated (internal) | tapped hole = UN/M thread at D' = D + 1.299038p; internal limits (2B/3B, 5H/4H5H) tabulated & verified vs B18.29.1/HC-2000 |
 | Pg conduit | DIN 40430 | Geometry | millimetre-based |
 
 Built-in size catalog: roughly 290 standard sizes across these families. Custom diameter/pitch entry
@@ -62,5 +62,5 @@ and engagement lengths L1–L4), with thread percent, length of engagement, and 
 1. Exact ISO 965 R40 tolerance tables for metric limits.
 2. Full ASME B1.5 Acme tolerance tables.
 3. Per-standard tolerance tables for Whitworth, Trapezoidal, Buttress, and the pipe families.
-4. Internal minor-diameter tolerance per ASME B1.1; UNJ controlled root radius; STI insert oversize.
+4. Internal minor-diameter tolerance per ASME B1.1; UNJ controlled root radius.
 5. CSV / clipboard export and terminology graphics.

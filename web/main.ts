@@ -57,21 +57,21 @@ const GROUPS: FamilyGroup[] = [
   { id: "unm", label: "Unified Miniature (UNM)", units: "metric", catalogFamily: "UNM",
     variants: [{ code: "UNM", label: "UNM" }], classesExt: METRIC_EXT, classesInt: METRIC_INT },
   { id: "sti", label: "STI Insert (Unified)", units: "inch", catalogFamily: "STI_UN",
-    variants: [{ code: "STI_UN", label: "STI" }], classesExt: UNIFIED_EXT, classesInt: UNIFIED_INT },
+    variants: [{ code: "STI_UN", label: "STI" }], classesExt: UNIFIED_EXT, classesInt: ["2B", "3B"] },
   { id: "stim", label: "STI Insert (Metric)", units: "metric", catalogFamily: "STI_M",
-    variants: [{ code: "STI_M", label: "STI-M" }], classesExt: METRIC_EXT, classesInt: METRIC_INT },
+    variants: [{ code: "STI_M", label: "STI-M" }], classesExt: METRIC_EXT, classesInt: ["5H", "4H5H"] },
   { id: "pg", label: "Metric Conduit (Pg)", units: "metric", catalogFamily: "PG_CONDUIT",
     variants: [{ code: "PG_CONDUIT", label: "Pg" }], classesExt: METRIC_EXT, classesInt: METRIC_INT },
 ];
 
 const STANDARD_SRC: Record<string, string> = {
   UN: "ASME B1.1-2003", UNR: "ASME B1.1-2003", UNJ: "SAE AS8879C-2003",
-  M: "ISO 965-1 / ASME B1.13M-2005", MJ: "ASME B1.21M-1997", STI_M: "ISO 965 (insert basis)",
+  M: "ISO 965-1 / ASME B1.13M-2005", MJ: "ASME B1.21M-1997", STI_M: "ASME B18.29.2M-2005",
   ACME: "ASME B1.5-1997", STUB_ACME: "ASME B1.5-1997",
   WHITWORTH: "BS 84:1956", TRAPEZOIDAL: "ISO 2901:1993",
   BUTTRESS: "ASME B1.9-1973", ISO_BUTTRESS: "DIN 513-1985",
   NPT: "ASME B1.20.1", NPTF: "ASME B1.20.1 / B1.20.3", NPSM: "ASME B1.20.1", NPSL: "ASME B1.20.1",
-  BSPT: "ISO 7-1:1994", BSPP: "ISO 7-1:1994", UNM: "ASME B1.10-1958", STI_UN: "STI manufacturer ref",
+  BSPT: "ISO 7-1:1994", BSPP: "ISO 7-1:1994", UNM: "ASME B1.10-1958", STI_UN: "ASME B18.29.1-2010",
   PG_CONDUIT: "DIN 40430-1971",
 };
 

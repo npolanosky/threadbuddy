@@ -20,6 +20,7 @@ import {
   WIRE_MIN_FACTOR_60,
 } from "./geometry.js";
 import { buildTapDrillInfo, alternateWire } from "./features.js";
+import { stiLimitsFor } from "../data/sti.js";
 
 const PD_COEFF = 0.6495190528; // pitch dia  = D - 0.649519 p
 const MINOR_INT_COEFF = 1.0825317547; // internal minor basic = D - 1.082532 p
@@ -37,9 +38,14 @@ const isExternalClass = (c: string): boolean => c.toUpperCase().endsWith("A");
 
 export function deriveUN(input: ThreadInput): ThreadResult {
   const notes: string[] = [];
-  const D = input.majorDiameter;
+  const nominalD = input.majorDiameter;
   const tpi = input.tpi ?? (input.pitch ? 1 / input.pitch : 0);
   const p = input.pitch ?? 1 / tpi;
+  // STI (Screw Thread Insert / Heli-Coil): the tapped hole is a UN thread of the same pitch but an
+  // enlarged basic major diameter D' = D + 1.299038 p (= D + 1.5H) to accept the insert wire. All
+  // geometry is computed at D'; the nominal size is kept only for the designation label.
+  const isSTI = input.family === "STI_UN";
+  const D = isSTI ? roundInch(nominalD + 2 * PD_COEFF * p) : nominalD;
   const cls = input.classOfFit.toUpperCase();
   const external = isExternalClass(cls);
   const le = input.lengthOfEngagement ?? D;
@@ -80,6 +86,7 @@ export function deriveUN(input: ThreadInput): ThreadResult {
     : { max: roundInch(0.144 * p), min: isUNR ? roundInch(0.108 * p) : NaN };
   if (isUNJ) notes.push("UNJ profile (AS8879/B1.15): controlled external root radius 0.15011–0.18042P; minor diameters increased (basic height 0.5625H).");
   if (isUNR) notes.push("UNR: mandatory rounded external root (radius 0.108–0.144P); other dimensions match UN.");
+  if (isSTI) notes.push(`STI tapped hole per ASME B18.29.1: basic major enlarged to D' = ${roundInch(D)}" (nominal ${nominalD}" + 1.299038p) to accept the insert wire. Internal limits are tabulated; the external column shows the equivalent enlarged (gauge/plug) thread.`);
 
   let wires: ThreadResult["wires"];
 
@@ -118,6 +125,20 @@ export function deriveUN(input: ThreadInput): ThreadResult {
     minorDiameter.internal = { max: roundInch(minorMin + minorTol), min: minorMin } as Limits;
     // Internal major diameter is a clearance dimension: min = basic major, no specified maximum.
     majorDiameter.internal = { max: NaN, min: roundInch(D) } as Limits;
+
+    // STI tapped-hole limits are stored from ASME B18.29.1 (they do not follow standard 2B/3B
+    // tolerance factors), so override the computed internal limits with the published values.
+    if (isSTI) {
+      const lim = stiLimitsFor("STI_UN", nominalD, tpi);
+      if (lim) {
+        const tight = cls === "3B";
+        pitchDiameter.internal = { max: tight ? lim.pitchMaxTight : lim.pitchMaxLoose, min: lim.pitchMin } as Limits;
+        minorDiameter.internal = { max: lim.minorMax, min: lim.minorMin } as Limits;
+        majorDiameter.internal = { max: NaN, min: lim.majorMin } as Limits;
+      } else {
+        notes.push("STI size not in the ASME B18.29.1 table — internal limits are computed, not tabulated.");
+      }
+    }
   }
 
   const lead = starts * p;
@@ -130,7 +151,7 @@ export function deriveUN(input: ThreadInput): ThreadResult {
 
   return {
     family: input.family,
-    designation: unDesignation(D, tpi, input.family, cls),
+    designation: unDesignation(nominalD, tpi, input.family, cls),
     units: "inch",
     pitch: p,
     tpi,

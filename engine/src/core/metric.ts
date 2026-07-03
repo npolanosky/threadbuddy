@@ -24,6 +24,7 @@ import {
   WIRE_MIN_FACTOR_60,
 } from "./geometry.js";
 import { buildTapDrillInfo, alternateWire } from "./features.js";
+import { stiLimitsFor } from "../data/sti.js";
 
 const PD_COEFF = 0.6495190528; // pitch dia  = D - 0.649519 P
 const MINOR_INT_COEFF = 1.0825317547; // internal minor D1 = D - 1.082532 P
@@ -100,8 +101,13 @@ function parseMetricClass(cls: string): { grade: number; position: string; exter
 
 export function deriveMetric(input: ThreadInput): ThreadResult {
   const notes: string[] = [];
-  const D = input.majorDiameter;
+  const nominalD = input.majorDiameter;
   const P = input.pitch ?? (input.tpi ? 25.4 / input.tpi : 0);
+  // STI (Screw Thread Insert / Heli-Coil, metric): tapped hole is an M thread of the same pitch at
+  // an enlarged basic major D' = D + 1.299038 P (= D + 1.5H) to accept the insert wire. Geometry is
+  // computed at D'; the nominal size is kept only for the designation label.
+  const isSTI = input.family === "STI_M";
+  const D = isSTI ? roundMetric(nominalD + 2 * PD_COEFF * P) : nominalD;
   const starts = input.starts ?? 1;
   const { grade, position, external } = parseMetricClass(input.classOfFit);
 
@@ -145,6 +151,20 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
     minorDiameter.internal = { max: roundMetric(minorMin + td1), min: minorMin };
     majorDiameter.internal = { max: NaN, min: roundMetric(D + ei) };
     notes.push("Metric tolerances computed (may differ ~1 µm from ISO R40 table).");
+
+    // STI tapped-hole limits are stored from ASME B18.29.2M (classes 5H / 4H5H), which do not
+    // follow the standard metric grade formulas — override the computed internal limits.
+    if (isSTI) {
+      const lim = stiLimitsFor("STI_M", nominalD, P);
+      if (lim) {
+        const tight = input.classOfFit.toUpperCase() === "4H5H";
+        pitchDiameter.internal = { max: tight ? lim.pitchMaxTight : lim.pitchMaxLoose, min: lim.pitchMin };
+        minorDiameter.internal = { max: lim.minorMax, min: lim.minorMin };
+        majorDiameter.internal = { max: NaN, min: lim.majorMin };
+      } else {
+        notes.push("STI size not in the ASME B18.29.2M table — internal limits are computed, not tabulated.");
+      }
+    }
   }
 
   let wires: ThreadResult["wires"];
@@ -180,12 +200,16 @@ export function deriveMetric(input: ThreadInput): ThreadResult {
   if (isMJ) {
     notes.push("MJ profile (B1.21M/ISO 5855): controlled external root radius 0.15011–0.18042P; minor diameters increased (basic height 0.5625H).");
   }
+  if (isSTI) {
+    notes.push(`STI tapped hole per ASME B18.29.2M: basic major enlarged to D' = ${trimNum(D)} mm (nominal ${trimNum(nominalD)} + 1.299038P) to accept the insert wire. Internal limits are tabulated; the external column shows the equivalent enlarged (gauge/plug) thread.`);
+  }
 
   const startTag = starts > 1 ? ` (${starts}-start)` : "";
   const prefix = isMJ ? "MJ" : "M";
+  const designationDia = isSTI ? nominalD : D;
   return {
     family: input.family,
-    designation: `${prefix}${trimNum(D)}×${trimNum(P)}-${input.classOfFit}${startTag}`,
+    designation: `${prefix}${trimNum(designationDia)}×${trimNum(P)}-${input.classOfFit}${startTag}`,
     units: "metric",
     pitch: P,
     tpi: 25.4 / P,
