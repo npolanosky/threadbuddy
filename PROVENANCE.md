@@ -54,7 +54,7 @@ Our own source code is MIT-licensed (see `LICENSE`).
 | NPSL — straight pipe (locknut) | ASME B1.20.1-1983 (R2001) |
 | ISO Taper Pipe (BSPT) | ISO 7-1:1994 |
 | ISO Parallel Pipe (BSPP) | ISO 7-1:1994 |
-| STI — Screw Thread Insert (Unified & Metric) | ASME B18.29.1-2010 (inch) / B18.29.2M-2005 (metric) |
+| STI — Screw Thread Insert (Unified & Metric) | ASME B18.29.1-2010 (inch) / B18.29.2M-2005 (metric); Stanley Heli-Coil HC-2000 Rev 11 catalog; Vargus/Heli-Coil drilling-data PDF; cross-verified with EMUGE STI chart (DIN 8140-2). Limit and tap-drill values confirmed by 2+ independent sources |
 | Pg — Metric Conduit | DIN 40430-1971 |
 
 ## Data-integrity methodology

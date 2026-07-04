@@ -57,6 +57,29 @@ describe("STI Unified (STI_UN) — ASME B18.29.1", () => {
       expect(lim.pitchMaxTight).toBeLessThanOrEqual(lim.pitchMaxLoose);
     }
   });
+
+  it("#12-24 UNC STI (newly catalogued) matches the published tapped-hole limits", () => {
+    const r = calculate({ family: "STI_UN", majorDiameter: 0.216, tpi: 24, classOfFit: "3B" });
+    expect(r.majorDiameter.internal!.min).toBeCloseTo(0.2701, 4);
+    expect(r.pitchDiameter.internal!.min).toBeCloseTo(0.243, 4);
+    expect(r.pitchDiameter.internal!.max).toBeCloseTo(0.2453, 4); // 3B
+    expect(r.minorDiameter.internal!.min).toBeCloseTo(0.225, 4);
+    expect(r.minorDiameter.internal!.max).toBeCloseTo(0.234, 4);
+    const lim = STI_UN_LIMITS.find((l) => l.nominal === 0.216 && l.size === 24)!;
+    expect(lim.tapDrillName).toBe("#1");
+  });
+
+  it("3/8-24 UNF STI (newly catalogued) matches the published tapped-hole limits", () => {
+    const r = calculate({ family: "STI_UN", majorDiameter: 0.375, tpi: 24, classOfFit: "3B" });
+    expect(r.majorDiameter.internal!.min).toBeCloseTo(0.4291, 4);
+    expect(r.pitchDiameter.internal!.min).toBeCloseTo(0.402, 4);
+    expect(r.pitchDiameter.internal!.max).toBeCloseTo(0.4047, 4); // 3B
+    expect(r.minorDiameter.internal!.min).toBeCloseTo(0.384, 4);
+    expect(r.minorDiameter.internal!.max).toBeCloseTo(0.391, 4);
+    // 3/8-24 UNF uses drill 25/64, distinct from 3/8-16 UNC.
+    const lim = STI_UN_LIMITS.find((l) => l.nominal === 0.375 && l.size === 24)!;
+    expect(lim.tapDrillName).toBe("25/64");
+  });
 });
 
 describe("STI Metric (STI_M) — ASME B18.29.2M", () => {
@@ -94,5 +117,21 @@ describe("STI Metric (STI_M) — ASME B18.29.2M", () => {
       expect(lim.minorMin).toBeCloseTo(lim.nominal + 0.216506 * P, 2);
       expect(lim.pitchMaxTight).toBeLessThanOrEqual(lim.pitchMaxLoose);
     }
+  });
+
+  it("M18 x 2.5 STI (newly catalogued) matches the published tapped-hole limits", () => {
+    const r = calculate({ family: "STI_M", majorDiameter: 18, pitch: 2.5, classOfFit: "4H5H" });
+    expect(r.majorDiameter.internal!.min).toBeCloseTo(21.2476, 3);
+    expect(r.pitchDiameter.internal!.min).toBeCloseTo(19.624, 3);
+    expect(r.pitchDiameter.internal!.max).toBeCloseTo(19.738, 3); // 4H5H
+    expect(r.minorDiameter.internal!.min).toBeCloseTo(18.541, 3);
+    expect(r.minorDiameter.internal!.max).toBeCloseTo(18.896, 3);
+  });
+
+  it("resolves the M3 x 0.5 minorMax conflict to the formula-consistent 3.220", () => {
+    const lim = STI_M_LIMITS.find((l) => l.nominal === 3 && l.size === 0.5)!;
+    expect(lim.minorMax).toBeCloseTo(3.22, 3);
+    // Formula check: internal minor max = minorMin + 4H tolerance allowance (~0.112).
+    expect(lim.minorMax).toBeCloseTo(lim.minorMin + 0.112, 3);
   });
 });
