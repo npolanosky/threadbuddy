@@ -147,8 +147,9 @@ const UNM_SIZES: Array<[string, number, number]> = [
 ];
 
 // ---- Screw Thread Insert, Unified (nominal screw sizes the insert serves) ----
-// Full ASME B18.29.1 coverage: UNC #4-40…1-8 (16) and UNF #4-48…1-12 (14), coarse+fine interleaved.
+// Full ASME B18.29.1 coverage: UNC #1-64…1-8 (18) and UNF #4-48…1-12 (14), coarse+fine interleaved.
 const STI_UN_SIZES: Array<[string, number, number]> = [
+  ["#1-64", numDia(1), 64], ["#2-56", numDia(2), 56],
   ["#4-40", numDia(4), 40], ["#4-48", numDia(4), 48], ["#5-40", numDia(5), 40],
   ["#6-32", numDia(6), 32], ["#6-40", numDia(6), 40], ["#8-32", numDia(8), 32],
   ["#8-36", numDia(8), 36], ["#10-24", numDia(10), 24], ["#10-32", numDia(10), 32],
@@ -162,12 +163,17 @@ const STI_UN_SIZES: Array<[string, number, number]> = [
 ];
 
 // ---- Screw Thread Insert, Metric (nominal screw sizes the insert serves) ----
+// Coarse M2–M24 (14) plus the standard fine-pitch series M8–M24 (9) per ASME B18.29.2M / HC-2000.
 const STI_M_SIZES: Array<[string, number, number]> = [
-  ["M3 x 0.5", 3, 0.5], ["M3.5 x 0.6", 3.5, 0.6], ["M4 x 0.7", 4, 0.7],
+  ["M2 x 0.4", 2, 0.4], ["M3 x 0.5", 3, 0.5], ["M3.5 x 0.6", 3.5, 0.6], ["M4 x 0.7", 4, 0.7],
   ["M5 x 0.8", 5, 0.8], ["M6 x 1", 6, 1], ["M8 x 1.25", 8, 1.25],
   ["M10 x 1.5", 10, 1.5], ["M12 x 1.75", 12, 1.75], ["M14 x 2", 14, 2],
   ["M16 x 2", 16, 2], ["M18 x 2.5", 18, 2.5], ["M20 x 2.5", 20, 2.5],
   ["M22 x 2.5", 22, 2.5], ["M24 x 3", 24, 3],
+  // Fine pitch
+  ["M8 x 1", 8, 1], ["M10 x 1.25", 10, 1.25], ["M12 x 1.25", 12, 1.25],
+  ["M14 x 1.5", 14, 1.5], ["M16 x 1.5", 16, 1.5], ["M18 x 1.5", 18, 1.5],
+  ["M20 x 1.5", 20, 1.5], ["M22 x 1.5", 22, 1.5], ["M24 x 2", 24, 2],
 ];
 
 // ---- Metric conduit Pg (DIN 40430) (D, pitch mm) ----

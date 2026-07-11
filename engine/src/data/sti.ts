@@ -71,6 +71,8 @@ type Row = [number, number, number, number, number, number, number, number, RowE
 // numeric limits they were originally stored with; their drill designations are not fabricated here.
 const STI_UN_ROWS: Row[] = [
   // UNC
+  [0.073, 64, 0.0933, 0.0832, 0.0843, 0.085, 0.0764, 0.0823, { tapDrillName: "#47", tapDrillDecimal: 0.0785, threadClass: "3B" }], // #1-64
+  [0.086, 56, 0.1092, 0.0976, 0.0989, 0.0996, 0.0899, 0.0961, { tapDrillName: "#42", tapDrillDecimal: 0.0935, threadClass: "3B" }], // #2-56
   [0.112, 40, 0.1445, 0.1283, 0.1299, 0.1308, 0.1175, 0.1252], // #4-40
   [0.125, 40, 0.1575, 0.1413, 0.143, 0.1438, 0.1305, 0.1373, { majorMax: 0.1603, tapDrillName: "#29", tapDrillDecimal: 0.136, altDrillAluminum: { name: "3.4mm", decimal: 0.1339 }, threadClass: "3B" }], // #5-40
   [0.138, 32, 0.1786, 0.1583, 0.1601, 0.1611, 0.1448, 0.1527], // #6-32
@@ -106,19 +108,18 @@ const STI_UN_ROWS: Row[] = [
 
 // [nominal, size(pitch mm), majorMin, pitchMin, pitchMaxTight(4H5H), pitchMaxLoose(5H), minorMin, minorMax]
 //
-// M3 / M4 / M5 minorMax conflict resolution (see Step 6 of the completion task):
-//   Two candidate sets existed — {3.248, 4.332, 5.374} vs the Vargus/HC-2000 PDF {3.220, 4.292, 5.334}.
-//   The 60°-thread internal minor max is minorMax ≈ majorMin − 1.082532·p + tolAllowance (ISO 965-1),
-//   which for the internal minor equals minorMin + tolAllowance. With the published 4H allowances
-//   (≈0.112 M3, 0.140 M4, 0.160 M5):
-//       M3: 3.108 + 0.112 = 3.220   M4: 4.152 + 0.140 = 4.292   M5: 5.174 + 0.160 = 5.334
-//   Every one matches the Vargus PDF set to the last decimal; the {3.248,4.332,5.374} set overshoots
-//   by 0.028–0.040 mm. Kept the formula-consistent Vargus HC-2000 values below.
+// M3 / M4 / M5 minorMax = 3.248 / 4.332 / 5.374, read verbatim from the official Stanley Heli-Coil
+// HC-2000 Rev 11 catalog, TABLE VIII — METRIC TAPPED HOLE DIMENSIONS (the governing primary source).
+// A prior revision briefly changed these to 3.220/4.292/5.334 from a secondary "Vargus PDF" plus an
+// assumed ISO-965 tolerance allowance; that was incorrect — HC-2000 Rev 11 tabulates 3.248/4.332/5.374
+// (minor tol 0.140/0.180/0.200 mm), which is also what the original table author had. Reverted here.
 const STI_M_ROWS: Row[] = [
-  [3, 0.5, 3.6495, 3.325, 3.367, 3.384, 3.108, 3.22], // M3 x 0.5  (minorMax 3.220 — see note above)
+  // Metric coarse
+  [2, 0.4, 2.5196, 2.26, 2.295, 2.31, 2.087, 2.199, { tapDrillName: "2.1mm", tapDrillDecimal: 2.1, threadClass: "4H5H" }], // M2 x 0.4
+  [3, 0.5, 3.6495, 3.325, 3.367, 3.384, 3.108, 3.248], // M3 x 0.5
   [3.5, 0.6, 4.2794, 3.89, 3.94, 3.959, 3.63, 3.79], // M3.5 x 0.6
-  [4, 0.7, 4.9093, 4.455, 4.509, 4.529, 4.152, 4.292], // M4 x 0.7  (minorMax 4.292 — see note above)
-  [5, 0.8, 6.0392, 5.52, 5.577, 5.597, 5.174, 5.334], // M5 x 0.8  (minorMax 5.334 — see note above)
+  [4, 0.7, 4.9093, 4.455, 4.509, 4.529, 4.152, 4.332], // M4 x 0.7
+  [5, 0.8, 6.0392, 5.52, 5.577, 5.597, 5.174, 5.374], // M5 x 0.8
   [6, 1, 7.299, 6.65, 6.719, 6.742, 6.217, 6.407], // M6 x 1
   [8, 1.25, 9.6238, 8.812, 8.886, 8.911, 8.271, 8.483], // M8 x 1.25
   [10, 1.5, 11.9486, 10.974, 11.061, 11.089, 10.324, 10.56], // M10 x 1.5
@@ -131,6 +132,17 @@ const STI_M_ROWS: Row[] = [
   [20, 2.5, 23.2476, 21.624, 21.738, 21.778, 20.541, 20.896], // M20 x 2.5
   [22, 2.5, 25.2476, 23.624, 23.738, 23.778, 22.541, 22.896, { tapDrillName: "22.75mm", tapDrillDecimal: 22.75, threadClass: "4H5H" }], // M22 x 2.5
   [24, 3, 27.8971, 25.948, 26.093, 26.135, 24.649, 25.049], // M24 x 3
+  // Metric fine (HC-2000 Rev 11, TABLE VIII — METRIC FINE). Aluminum tap drill (smaller) carried as
+  // altDrillAluminum where it differs from the general steel/plastic drill.
+  [8, 1, 9.299, 8.65, 8.719, 8.742, 8.217, 8.407, { tapDrillName: "8.3mm", tapDrillDecimal: 8.3, altDrillAluminum: { name: "8.25mm", decimal: 8.25 }, threadClass: "4H5H" }], // M8 x 1
+  [10, 1.25, 11.6238, 10.812, 10.886, 10.911, 10.271, 10.483, { tapDrillName: "10.25mm", tapDrillDecimal: 10.25, threadClass: "4H5H" }], // M10 x 1.25
+  [12, 1.25, 13.6238, 12.812, 12.898, 12.926, 12.271, 12.483, { tapDrillName: "12.25mm", tapDrillDecimal: 12.25, threadClass: "4H5H" }], // M12 x 1.25
+  [14, 1.5, 15.9486, 14.974, 15.067, 15.099, 14.324, 14.56, { tapDrillName: "14.5mm", tapDrillDecimal: 14.5, altDrillAluminum: { name: "14.25mm", decimal: 14.25 }, threadClass: "4H5H" }], // M14 x 1.5
+  [16, 1.5, 17.9486, 16.974, 17.067, 17.099, 16.324, 16.56, { tapDrillName: "16.5mm", tapDrillDecimal: 16.5, altDrillAluminum: { name: "16.25mm", decimal: 16.25 }, threadClass: "4H5H" }], // M16 x 1.5
+  [18, 1.5, 19.9486, 18.974, 19.067, 19.099, 18.324, 18.56, { tapDrillName: "18.5mm", tapDrillDecimal: 18.5, altDrillAluminum: { name: "18.25mm", decimal: 18.25 }, threadClass: "4H5H" }], // M18 x 1.5
+  [20, 1.5, 21.9486, 20.974, 21.067, 21.099, 20.324, 20.56, { tapDrillName: "20.5mm", tapDrillDecimal: 20.5, altDrillAluminum: { name: "20.25mm", decimal: 20.25 }, threadClass: "4H5H" }], // M20 x 1.5
+  [22, 1.5, 23.9486, 22.974, 23.067, 23.099, 22.324, 22.56, { tapDrillName: "22.5mm", tapDrillDecimal: 22.5, altDrillAluminum: { name: "22.25mm", decimal: 22.25 }, threadClass: "4H5H" }], // M22 x 1.5
+  [24, 2, 26.5981, 25.299, 25.414, 25.454, 24.433, 24.733, { tapDrillName: "24.5mm", tapDrillDecimal: 24.5, threadClass: "4H5H" }], // M24 x 2
 ];
 
 function toTable(rows: Row[]): StiLimits[] {

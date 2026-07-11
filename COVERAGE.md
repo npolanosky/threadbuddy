@@ -38,10 +38,10 @@ flags any value that is provisional.
 | NPSM / NPSL (straight) | ASME B1.20.1 | Geometry | distinct: NPSM at NPT gauge plane (E1), NPSL = E1 + P/4 (validated vs 1/2-14) |
 | BSPT / BSPP | ISO 7-1 | Provisional | 55° form; ISO 7 formulas pending |
 | UNM (miniature) | ASME B1.10 | Geometry | millimetre-based |
-| STI — Unified / Metric | ASME B18.29.1 / B18.29.2M / DIN 8140-2 | Validated (internal) | tapped hole = UN/M thread at D' = D + 1.299038p; internal limits (2B/3B, 5H/4H5H) tabulated & verified vs B18.29.1/HC-2000. Complete inch UNC (#4-40…1-8, 16 sizes) and UNF (#4-48…1-12, 14 sizes), metric coarse M3–M24 (13 sizes) + tap-drill data |
+| STI — Unified / Metric | ASME B18.29.1 / B18.29.2M / DIN 8140-2 | Validated (internal) | tapped hole = UN/M thread at D' = D + 1.299038p; internal limits (2B/3B, 5H/4H5H) tabulated & verified vs HC-2000 Rev 11. Inch UNC #1-64…1-8 (18) + UNF #4-48…1-12 (14); metric coarse M2–M24 (14) + fine M8×1…M24×2 (9) + tap-drill data |
 | Pg conduit | DIN 40430 | Geometry | millimetre-based |
 
-Built-in size catalog: roughly 320 standard sizes across these families. Custom diameter/pitch entry
+Built-in size catalog: roughly 335 standard sizes across these families. Custom diameter/pitch entry
 is supported for every family.
 
 ## Features

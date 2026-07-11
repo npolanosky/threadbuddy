@@ -58,6 +58,16 @@ describe("STI Unified (STI_UN) — ASME B18.29.1", () => {
     }
   });
 
+  it("#2-56 UNC STI (newly catalogued, smallest UNC) matches the HC-2000/AmesWeb limits", () => {
+    const r = calculate({ family: "STI_UN", majorDiameter: 0.086, tpi: 56, classOfFit: "3B" });
+    expect(r.majorDiameter.internal!.min).toBeCloseTo(0.1092, 4);
+    expect(r.pitchDiameter.internal!.min).toBeCloseTo(0.0976, 4);
+    expect(r.pitchDiameter.internal!.max).toBeCloseTo(0.0989, 4); // 3B
+    expect(r.minorDiameter.internal!.min).toBeCloseTo(0.0899, 4);
+    expect(r.minorDiameter.internal!.max).toBeCloseTo(0.0961, 4);
+    expect(STI_UN_LIMITS.find((l) => l.nominal === 0.073 && l.size === 64)!.pitchMaxTight).toBeCloseTo(0.0843, 4);
+  });
+
   it("#12-24 UNC STI (newly catalogued) matches the published tapped-hole limits", () => {
     const r = calculate({ family: "STI_UN", majorDiameter: 0.216, tpi: 24, classOfFit: "3B" });
     expect(r.majorDiameter.internal!.min).toBeCloseTo(0.2701, 4);
@@ -128,10 +138,30 @@ describe("STI Metric (STI_M) — ASME B18.29.2M", () => {
     expect(r.minorDiameter.internal!.max).toBeCloseTo(18.896, 3);
   });
 
-  it("resolves the M3 x 0.5 minorMax conflict to the formula-consistent 3.220", () => {
+  it("M3 x 0.5 minorMax matches the HC-2000 Rev 11 primary source (3.248)", () => {
+    // HC-2000 Rev 11 Table VIII tabulates 3.248 (minor tol 0.140 mm). A prior revision briefly used
+    // 3.220 from a secondary source; the authoritative catalog value is 3.248.
     const lim = STI_M_LIMITS.find((l) => l.nominal === 3 && l.size === 0.5)!;
-    expect(lim.minorMax).toBeCloseTo(3.22, 3);
-    // Formula check: internal minor max = minorMin + 4H tolerance allowance (~0.112).
-    expect(lim.minorMax).toBeCloseTo(lim.minorMin + 0.112, 3);
+    expect(lim.minorMax).toBeCloseTo(3.248, 3);
+    expect(STI_M_LIMITS.find((l) => l.nominal === 4 && l.size === 0.7)!.minorMax).toBeCloseTo(4.332, 3);
+    expect(STI_M_LIMITS.find((l) => l.nominal === 5 && l.size === 0.8)!.minorMax).toBeCloseTo(5.374, 3);
+  });
+
+  it("M2 x 0.4 STI (newly catalogued) matches the HC-2000 tapped-hole limits", () => {
+    const r = calculate({ family: "STI_M", majorDiameter: 2, pitch: 0.4, classOfFit: "4H5H" });
+    expect(r.majorDiameter.internal!.min).toBeCloseTo(2.5196, 3);
+    expect(r.pitchDiameter.internal!.min).toBeCloseTo(2.26, 3);
+    expect(r.pitchDiameter.internal!.max).toBeCloseTo(2.295, 3); // 4H5H
+    expect(r.minorDiameter.internal!.min).toBeCloseTo(2.087, 3);
+    expect(r.minorDiameter.internal!.max).toBeCloseTo(2.199, 3);
+  });
+
+  it("M12 x 1.25 fine-pitch STI (newly catalogued) matches the HC-2000 tapped-hole limits", () => {
+    const r = calculate({ family: "STI_M", majorDiameter: 12, pitch: 1.25, classOfFit: "5H" });
+    expect(r.majorDiameter.internal!.min).toBeCloseTo(13.6238, 3);
+    expect(r.pitchDiameter.internal!.min).toBeCloseTo(12.812, 3);
+    expect(r.pitchDiameter.internal!.max).toBeCloseTo(12.926, 3); // 5H
+    expect(r.minorDiameter.internal!.min).toBeCloseTo(12.271, 3);
+    expect(r.minorDiameter.internal!.max).toBeCloseTo(12.483, 3);
   });
 });
