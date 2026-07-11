@@ -167,6 +167,16 @@ const mean = (l?: Limits): string =>
   l && Number.isFinite(l.max) && Number.isFinite(l.min) ? fmt((l.max + l.min) / 2) : "—";
 const setText = (id: string, t: string): void => { $(id).textContent = t; };
 
+// External-panel (and measurement-over-wires) output field ids — blanked when there is no
+// external member to report, e.g. for STI insert families where only the tapped hole is defined.
+const EXTERNAL_FIELD_IDS = [
+  "desig-ext", "ext-allow", "ext-maj-max", "ext-maj-min", "ext-maj-mean", "ext-maj-tol",
+  "ext-pd-max", "ext-pd-min", "ext-pd-mean", "ext-pd-tol", "ext-min-max", "ext-min-min",
+  "ext-min-mean", "ext-flat", "ext-rr-max", "ext-rr-min", "ext-height",
+];
+const WIRE_FIELD_IDS = ["mow-max", "mow-min", "wire-best", "wire-max", "wire-min", "wire-const"];
+const blankFields = (ids: string[]): void => ids.forEach((id) => setText(id, "—"));
+
 // ---- Render ----
 function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: ThreadResult): void {
   if (rExt) {
@@ -187,10 +197,13 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("ext-rr-max", fmt(rExt.rootRadius?.max));
     setText("ext-rr-min", fmt(rExt.rootRadius?.min));
     setText("ext-height", fmt(rExt.threadHeight));
+  } else {
+    blankFields(EXTERNAL_FIELD_IDS);
   }
   // Coating for the external thread feeds the optional MOW "use coating" recompute.
   const coatExt = rExt ? getCoating(rExt, "external") : null;
   if (rExt) renderWires(rExt, coatExt);
+  else blankFields(WIRE_FIELD_IDS);
   renderCoating(rExt, rInt);
   // Highlight Starts/Lead panel when multi-start or a custom length of engagement is set.
   const startsChanged = (src.starts ?? 1) !== 1 || $<HTMLInputElement>("loe").value.trim() !== "";
@@ -395,6 +408,8 @@ function recompute(): void {
   let rInt: ThreadResult | null = null;
   try { rExt = calculate(readInput($<HTMLSelectElement>("classExternal").value)); } catch (e) { console.warn(e); }
   try { rInt = calculate(readInput($<HTMLSelectElement>("classInternal").value)); } catch (e) { console.warn(e); }
+  // STI insert families define only the tapped hole; there is no external member to report.
+  if (group.id === "sti" || group.id === "stim") rExt = null;
   const src = rExt ?? rInt;
   if (src) render(rExt, rInt, src);
 }
