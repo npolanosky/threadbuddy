@@ -112,7 +112,22 @@ function populateSizes(): void {
   sel.innerHTML = "";
   sel.add(new Option("— Custom / type below —", "custom"));
   const sizes = currentSizes();
-  sizes.forEach((e, idx) => sel.add(new Option(e.label, String(idx))));
+  if (group.id === "stim") {
+    // Metric STI spans coarse + fine pitch series — group them under labelled headings.
+    let seriesSeen = "";
+    let og: HTMLOptGroupElement | null = null;
+    sizes.forEach((e, idx) => {
+      if (e.series !== seriesSeen) {
+        seriesSeen = e.series;
+        og = document.createElement("optgroup");
+        og.label = e.series === "fine" ? "Fine pitch" : "Coarse pitch";
+        sel.add(og);
+      }
+      og!.appendChild(new Option(e.label, String(idx)));
+    });
+  } else {
+    sizes.forEach((e, idx) => sel.add(new Option(e.label, String(idx))));
+  }
   const pref =
     group.id === "stim" ? "M6 x 1" :
     group.id === "unm" ? "1.00" :
