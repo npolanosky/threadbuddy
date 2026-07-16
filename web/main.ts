@@ -187,7 +187,7 @@ const setText = (id: string, t: string): void => { $(id).textContent = t; };
 const EXTERNAL_FIELD_IDS = [
   "desig-ext", "ext-allow", "ext-maj-max", "ext-maj-min", "ext-maj-mean", "ext-maj-tol",
   "ext-pd-max", "ext-pd-min", "ext-pd-mean", "ext-pd-tol", "ext-min-max", "ext-min-min",
-  "ext-min-mean", "ext-flat", "ext-rr-max", "ext-rr-min", "ext-height",
+  "ext-min-mean", "ext-flat", "ext-rr-max", "ext-rr-min", "ext-height", "ext-pdo",
 ];
 const WIRE_FIELD_IDS = ["mow-max", "mow-min", "wire-best", "wire-max", "wire-min", "wire-const"];
 const blankFields = (ids: string[]): void => ids.forEach((id) => setText(id, "—"));
@@ -212,6 +212,8 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("ext-rr-max", fmt(rExt.rootRadius?.max));
     setText("ext-rr-min", fmt(rExt.rootRadius?.min));
     setText("ext-height", fmt(rExt.threadHeight));
+    // Fusion Thread-toolpath pitch-diameter offset: diametric full thread depth = 2 × radial height.
+    setText("ext-pdo", fmt(2 * rExt.threadHeight));
   } else {
     blankFields(EXTERNAL_FIELD_IDS);
   }
@@ -246,6 +248,7 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("int-maj-max", fmt(rInt.majorDiameter.internal?.max));
     setText("int-flat", fmt(rInt.flatAtRoot?.internal));
     setText("int-height", fmt(rInt.threadHeight));
+    setText("int-pdo", fmt(2 * rInt.threadHeight));
     renderTapDrill(rInt);
   }
   setText("o-pitch", fmt(src.pitch));
@@ -311,6 +314,9 @@ function renderTaper(t: NonNullable<ThreadResult["taper"]>): void {
   setText("tp-rad-crest", t.radii ? fmt(t.radii.crest.max) : "—");
   setText("tp-rad-root", t.radii ? fmt(t.radii.root.max) : "—");
   setText("tp-height", fmt(t.heightMean));
+  // Diametric Fusion PDO for taper pipe = 2 × the (mean) radial thread height.
+  setText("tp-ext-pdo", fmt(2 * t.heightMean));
+  setText("tp-int-pdo", fmt(2 * t.heightMean));
   setText("tp-imin-l1", fmt(t.internal.minor.pipeEndL1));
   setText("tp-imin-face", fmt(t.internal.minor.pipeFace));
   setText("tp-ipd-gage", fmt(t.internal.pitchGageNotch));

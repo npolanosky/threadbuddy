@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="./favicon-48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
-    <script type="module" crossorigin src="./assets/index-DfbDR1uL.js"></script>
+    <script type="module" crossorigin src="./assets/index-Bomgnx3k.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-A7hZSKBU.css">
   </head>
   <body>
@@ -57,6 +57,7 @@
                 <div><span>Root rad max</span><output id="ext-rr-max">—</output></div>
                 <div><span>Root rad min</span><output id="ext-rr-min">—</output></div>
                 <div><span>Height (basic)</span><output id="ext-height">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="ext-pdo">—</output></div>
               </div>
             </div>
             <div class="taper-only">
@@ -73,6 +74,7 @@
                 <div><span>Crest radius</span><output id="tp-rad-crest">—</output></div>
                 <div><span>Root radius</span><output id="tp-rad-root">—</output></div>
                 <div><span>Height (mean)</span><output id="tp-height">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="tp-ext-pdo">—</output></div>
                 <div><span>Taper angle</span><output id="tp-taper-angle">—</output></div>
                 <div><span>Thread angle</span><output id="tp-thread-angle">—</output></div>
               </div>
@@ -93,6 +95,7 @@
               <div class="mini-grid">
                 <div><span>Flat at root</span><output id="int-flat">—</output></div>
                 <div><span>Height (basic)</span><output id="int-height">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="int-pdo">—</output></div>
               </div>
             </div>
             <div class="taper-only">
@@ -106,6 +109,7 @@
                 <div><span>Pitch (gage notch)</span><output id="tp-ipd-gage">—</output></div>
                 <div><span>Tap drill</span><output id="tp-tapdrill">—</output></div>
                 <div><span>Tap depth (ref)</span><output id="tp-tapdepth">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="tp-int-pdo">—</output></div>
               </div>
             </div>
           </section>
@@ -220,6 +224,13 @@
           <h2>Notes &amp; Provenance</h2>
           <ul id="notes"></ul>
           <p class="src" id="standard-src">—</p>
+          <p class="src" id="pdo-note">
+            <strong>Fusion PDO (Ø)</strong> is a <em>diametric</em> offset (= major − minor, not radial) for
+            Autodesk&nbsp;Fusion's <em>Thread</em> toolpath. It is a starting value assuming an ideal,
+            correctly-sized thread mill; fine-tune for your tool's crest flat/point and desired fit. Other
+            CAM software may operate differently. Method after
+            <a href="https://saundersmachineworks.com/blogs/nyc-cnc/threadmilling-tips-tricks" target="_blank" rel="noopener">Saunders Machine Works / NYC&nbsp;CNC</a>.
+          </p>
           <p class="src ack">
             Data &amp; formulas from public standards.<br />
             Fresh reimplementation of ME&nbsp;ThreadPal by Michael Rainey — gratefully acknowledged.<br />
