@@ -172,6 +172,24 @@ function convToNative(v: number): number {
   if (group.units === d) return v;
   return group.units === "inch" ? v / 25.4 : v * 25.4;
 }
+
+// Inputs the user types in the CURRENT display unit (they are convToNative'd for calculation).
+// When the display unit changes we rescale their numbers so a physical size is not silently
+// reinterpreted — e.g. a 0.24" thread mill must not become a 0.24 mm one on switching to metric.
+const DISPLAY_UNIT_INPUT_IDS = ["altWire", "coatThk", "coatTol", "tmDia", "tmFlat"];
+let lastDisplayUnit: "inch" | "metric" = "inch";
+function syncDisplayUnitInputs(): void {
+  const now = displayUnits();
+  if (now === lastDisplayUnit) return;
+  const factor = now === "metric" ? 25.4 : 1 / 25.4;
+  const dp = now === "metric" ? 4 : 5;
+  for (const id of DISPLAY_UNIT_INPUT_IDS) {
+    const el = $<HTMLInputElement>(id);
+    const v = parseFloat(el.value);
+    if (Number.isFinite(v) && v > 0) el.value = String(parseFloat((v * factor).toFixed(dp)));
+  }
+  lastDisplayUnit = now;
+}
 function fmt(v: number | undefined): string {
   if (v === undefined || !Number.isFinite(v)) return "—";
   return conv(v).toFixed(displayUnits() === "metric" ? 3 : 4);
@@ -494,6 +512,7 @@ function onFamilyChange(): void {
   populateVariants();
   populateClasses();
   populateSizes();
+  syncDisplayUnitInputs(); // family switch also flips the display unit to the family's native unit
   recompute();
 }
 
@@ -512,10 +531,12 @@ function init(): void {
       recompute();
     }));
   ["classExternal", "classInternal"].forEach((id) => $(id).addEventListener("change", recompute));
-  document.querySelectorAll('input[name="units"],input[name="anglename"],input[name="tapType"],input[name="coatMode"],input[name="coatHand"],#sharpRoot,#useCoating')
+  // Units toggle rescales the display-unit inputs before recomputing so tools/wires keep their size.
+  document.querySelectorAll('input[name="units"]')
+    .forEach((el) => el.addEventListener("change", () => { syncDisplayUnitInputs(); recompute(); }));
+  document.querySelectorAll('input[name="anglename"],input[name="tapType"],input[name="coatMode"],input[name="coatHand"],#sharpRoot,#useCoating')
     .forEach((el) => el.addEventListener("change", recompute));
   $("resetWire").addEventListener("click", () => { $<HTMLInputElement>("altWire").value = ""; $<HTMLInputElement>("useCoating").checked = false; recompute(); });
-  $("resetTm").addEventListener("click", () => { $<HTMLInputElement>("tmDia").value = ""; $<HTMLInputElement>("tmFlat").value = ""; recompute(); });
   $("resetAll").addEventListener("click", resetToDefaults);
   $("printBtn").addEventListener("click", () => window.print());
 
