@@ -14,6 +14,44 @@
   --accent: #355c34;
   --result-panel: #c9d6c3;
   --header: #2f4a2e;
+  --body-bg: #e9ece4;
+  --text: #000;
+  --muted-text: #34452f;
+  --link: #1f6b1a;
+  --td-border: #cdd4c4;
+  --good-row-bg: #d7e8cf;
+  --rec-row-bg: #b7d7a8;
+  --warn-text: #b3261e;
+  --btn-text: #f0f5ee;
+  --btn-hover: #2a4a29;
+  color-scheme: light;
+}
+
+/* Dark mode — keeps ThreadBuddy's warm sage identity (deep olive surfaces, cream→dark value
+   boxes) instead of a generic slate/neon scheme. Toggled via data-theme on <html>. */
+:root[data-theme="dark"] {
+  --panel: #2a322a;
+  --panel-dark: #212821;
+  --value-bg: #363f31;
+  --value-border: #4c5b48;
+  --input-bg: #2a3542;
+  --input-border: #45607d;
+  --changed-bg: #5a4d1c;
+  --zebra: #2e372c;
+  --ink: #dde3d4;
+  --accent: #4c8048;
+  --result-panel: #1f2620;
+  --header: #1d2a1c;
+  --body-bg: #14180f;
+  --text: #dde3d4;
+  --muted-text: #a9b8a2;
+  --link: #8fd086;
+  --td-border: #414c3e;
+  --good-row-bg: #315030;
+  --rec-row-bg: #416c3d;
+  --warn-text: #ff8078;
+  --btn-hover: #3c6539;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -21,8 +59,8 @@
 body {
   margin: 0;
   font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
-  background: #e9ece4;
-  color: #000;
+  background: var(--body-bg);
+  color: var(--text);
   font-size: 14px;
 }
 
@@ -56,13 +94,13 @@ body {
 .sensei-pop {
   position: absolute; top: 100%; right: 0; margin-top: 8px; z-index: 20;
   display: none; min-width: 180px;
-  background: var(--value-bg); color: #000;
+  background: var(--value-bg); color: var(--text);
   border: 1px solid var(--value-border); border-radius: 8px;
   padding: 8px 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   text-align: left;
 }
 .sensei-pop strong { display: block; font-size: 14px; }
-.sensei-pop span { font-size: 12px; color: #34452f; }
+.sensei-pop span { font-size: 12px; color: var(--muted-text); }
 .sensei-pop::before {
   content: ""; position: absolute; top: -6px; right: 22px;
   width: 10px; height: 10px; background: var(--value-bg);
@@ -111,17 +149,17 @@ body {
 .help-pop {
   position: absolute; z-index: 30; left: 50%; transform: translateX(-50%); top: calc(100% + 8px);
   display: none; width: 250px; max-width: 74vw;
-  background: var(--value-bg); color: #000; border: 1px solid var(--value-border);
+  background: var(--value-bg); color: var(--text); border: 1px solid var(--value-border);
   border-radius: 8px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   font-size: 11px; font-weight: 400; line-height: 1.45;
   text-align: left; text-transform: none; letter-spacing: normal;
 }
 .help-pop strong { display: block; }
-.help-pop a { color: #1f6b1a; }
+.help-pop a { color: var(--link); }
 .help-wrap:hover .help-pop, .help-wrap:focus .help-pop, .help-wrap:focus-within .help-pop { display: block; }
 
 /* Thread-mill fit warning (tool too large for the drilled hole). */
-.tm-warn { margin: 6px 0 0; font-size: 11px; font-weight: 700; color: #b3261e; text-align: center; }
+.tm-warn { margin: 6px 0 0; font-size: 11px; font-weight: 700; color: var(--warn-text); text-align: center; }
 
 /* Tapered-thread (NPT/NPTF/BSPT) layout swap. */
 .taper-only { display: none; }
@@ -148,7 +186,7 @@ body {
   gap: 10px;
   text-align: center;
 }
-.desig { font-weight: 700; text-transform: none; letter-spacing: 0; color: #000; font-size: 13px; }
+.desig { font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--text); font-size: 13px; }
 
 
 /* Compact, centered set of small labelled boxes (flat-at-root, radii, height, …). */
@@ -170,8 +208,8 @@ body {
 .drill-scroll .dim-table { margin: 0; width: 100%; }
 .drill-scroll thead th { position: sticky; top: 0; background: var(--result-panel); z-index: 1; }
 .opt-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin: 8px 0 2px; }
-.good-row td { background: #d7e8cf; font-weight: 600; }
-.drill-table tr.recommended td { background: #b7d7a8 !important; font-weight: 700; }
+.good-row td { background: var(--good-row-bg); font-weight: 600; }
+.drill-table tr.recommended td { background: var(--rec-row-bg) !important; font-weight: 700; }
 .drill-table tr.recommended td:first-child { border-left: 3px solid var(--accent); }
 .btn.small { padding: 4px 8px; font-size: 12px; }
 
@@ -184,7 +222,7 @@ body {
   font-size: 13px;
   font-variant-numeric: tabular-nums;
   min-height: 28px;
-  color: #000;
+  color: var(--text);
 }
 /* Editable inputs get a contrasting (soft blue) background; read-only outputs stay cream. */
 .field input, .field select { background: var(--input-bg); border-color: var(--input-border); }
@@ -203,14 +241,14 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
 .btn {
   margin-top: 6px;
   background: var(--accent);
-  color: #f0f5ee;
+  color: var(--btn-text);
   border: none;
   border-radius: 5px;
   padding: 7px 12px;
   cursor: pointer;
   font-size: 13px;
 }
-.btn:hover { background: #2a4a29; }
+.btn:hover { background: var(--btn-hover); }
 
 .dim-row {
   display: flex;
@@ -241,11 +279,11 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
   font-variant-numeric: tabular-nums;
   font-size: 12.5px;
 }
-.dim-table thead th { color: #000; font-size: 11px; text-transform: uppercase; font-weight: 700; }
+.dim-table thead th { color: var(--text); font-size: 11px; text-transform: uppercase; font-weight: 700; }
 .dim-table tbody th { text-align: right; font-weight: 700; padding-right: 10px; white-space: nowrap; }
 .dim-table td {
   background: var(--value-bg);
-  border: 1px solid #cdd4c4;
+  border: 1px solid var(--td-border);
   border-radius: 3px;
   min-width: 54px;
 }
@@ -262,18 +300,18 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
 #panel-notes .ack { margin-top: auto; padding-top: 10px; line-height: 1.4; }
 #notes { margin: 0; padding-left: 18px; font-size: 12px; }
 #notes li { margin: 3px 0; }
-.src { font-size: 11.5px; color: #000; margin: 8px 0 0; overflow-wrap: anywhere; }
+.src { font-size: 11.5px; color: var(--text); margin: 8px 0 0; overflow-wrap: anywhere; }
 
 .app-footer {
   max-width: 1280px;
   margin: 0 auto;
   padding: 8px 22px 28px;
   font-size: 11.5px;
-  color: #000;
+  color: var(--text);
 }
 
 .hidden { display: none !important; }
-.warn output, output.warn { color: #b3261e; font-weight: 700; }
+.warn output, output.warn { color: var(--warn-text); font-weight: 700; }
 
 /* Narrow / mobile: flatten the bands into one column with a custom order, and place
    Display Options + MOW side by side in their own half-width row. */

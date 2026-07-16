@@ -531,9 +531,23 @@ function onFamilyChange(): void {
   recompute();
 }
 
+// Light/dark theme. Preference persists in localStorage; default is light.
+function applyTheme(theme: "light" | "dark"): void {
+  document.documentElement.setAttribute("data-theme", theme);
+  const btn = $("themeBtn");
+  btn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+  btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+  try { localStorage.setItem("threadbuddy-theme", theme); } catch { /* storage may be unavailable */ }
+}
+
 function init(): void {
   populateFamily();
   onFamilyChange();
+  let storedTheme: string | null = null;
+  try { storedTheme = localStorage.getItem("threadbuddy-theme"); } catch { /* ignore */ }
+  applyTheme(storedTheme === "dark" ? "dark" : "light");
+  $("themeBtn").addEventListener("click", () =>
+    applyTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark"));
   $("family").addEventListener("change", onFamilyChange);
   $("size").addEventListener("change", () => {
     const v = $<HTMLSelectElement>("size").value;

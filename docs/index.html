@@ -10,8 +10,12 @@
     <link rel="icon" type="image/png" href="./favicon-48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
-    <script type="module" crossorigin src="./assets/index-D0qZW4w3.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-LMEmVZsr.css">
+    <script>
+      // Apply the saved theme before first paint to avoid a light flash.
+      try { if (localStorage.getItem("threadbuddy-theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}
+    </script>
+    <script type="module" crossorigin src="./assets/index-ClBR9H4Y.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-D8VHwDOl.css">
   </head>
   <body>
     <header class="app-header">
@@ -125,6 +129,8 @@
               <label><input type="radio" name="anglename" value="helix" /> Helix</label>
             </div>
             <label class="check"><input type="checkbox" id="sharpRoot" /> Sharp root</label>
+            <div class="opt-title">Appearance</div>
+            <button id="themeBtn" type="button" class="btn small" aria-pressed="false">Dark mode</button>
             <div class="btn-row">
               <button id="resetAll" type="button" class="btn">Reset all to default</button>
               <button id="printBtn" type="button" class="btn">Print report</button>
