@@ -211,11 +211,11 @@ const WIRE_FIELD_IDS = ["mow-max", "mow-min", "wire-best", "wire-max", "wire-min
 const blankFields = (ids: string[]): void => ids.forEach((id) => setText(id, "—"));
 
 // ---- Fusion Pitch Diameter Offset (thread milling) ----
-// Diametric offset for Autodesk Fusion's Thread toolpath. The ideal-tool baseline is
-// major − minor = 2 × radial thread height. With a real thread mill, the NYC CNC / Saunders
-// method corrects for the tool's crest ("tip flat" c):  external 1.4·base − √3·c ;
-// internal 1.2·base − √3·c (model at the drilled minor). The tip flat is measured, or estimated
-// as Ø ÷ 100 (their rule of thumb for cutters up to 0.5"; ≈ the best fit to their tool data).
+// Diametric offset for Autodesk Fusion's Thread toolpath, computed by the NYC CNC / Saunders method
+// for the entered thread mill: external 1.4·base − √3·c ; internal 1.2·base − √3·c (model at the
+// drilled minor), where base = major − minor = 2 × radial thread height and c is the tool's crest
+// ("tip flat") — measured, or estimated as Ø ÷ 100 (their rule of thumb for cutters up to 0.5").
+// With no thread mill entered there is nothing to base an offset on, so the field is left blank.
 function toolCrest(): { crest: number; source: "measured" | "estimated" } | null {
   const measured = convToNative(parseFloat($<HTMLInputElement>("tmFlat").value));
   if (Number.isFinite(measured) && measured > 0) return { crest: measured, source: "measured" };
@@ -227,9 +227,9 @@ function fusionPdo(
   radialHeight: number,
   hand: "external" | "internal",
   tc: ReturnType<typeof toolCrest>,
-): number {
+): number | undefined {
+  if (!tc) return undefined; // no tool entered → nothing to offset from; show "—"
   const base = 2 * radialHeight;
-  if (!tc) return base;
   const mult = hand === "external" ? 1.4 : 1.2;
   return mult * base - Math.sqrt(3) * tc.crest;
 }
@@ -238,6 +238,16 @@ function fusionPdo(
 function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: ThreadResult): void {
   const tc = toolCrest();
   setText("tm-flat-used", tc ? `${fmt(tc.crest)} ${tc.source === "estimated" ? "(est)" : "(meas)"}` : "—");
+  // Fit check: an internal thread mill must be smaller than the drilled (minor) hole to fit.
+  const toolDiaN = convToNative(parseFloat($<HTMLInputElement>("tmDia").value));
+  const holeMinor = rInt?.minorDiameter.internal?.min;
+  const warnEl = $("tm-warn");
+  if (Number.isFinite(toolDiaN) && toolDiaN > 0 && holeMinor !== undefined && Number.isFinite(holeMinor) && toolDiaN >= holeMinor) {
+    warnEl.textContent = `⚠ Thread mill Ø ${fmt(toolDiaN)} ≥ hole minor Ø ${fmt(holeMinor)} — too large to fit for internal threading.`;
+    warnEl.classList.remove("hidden");
+  } else {
+    warnEl.classList.add("hidden");
+  }
   if (rExt) {
     setText("desig-ext", rExt.designation);
     setText("ext-allow", fmt(rExt.allowance));

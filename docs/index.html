@@ -10,8 +10,8 @@
     <link rel="icon" type="image/png" href="./favicon-48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
-    <script type="module" crossorigin src="./assets/index-DgZXWFHS.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BlUTj_sS.css">
+    <script type="module" crossorigin src="./assets/index-DJPtSxpw.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DBzk376T.css">
   </head>
   <body>
     <header class="app-header">
@@ -57,7 +57,7 @@
                 <div><span>Root rad max</span><output id="ext-rr-max">—</output></div>
                 <div><span>Root rad min</span><output id="ext-rr-min">—</output></div>
                 <div><span>Height (basic)</span><output id="ext-height">—</output></div>
-                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="ext-pdo">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset for Autodesk Fusion's Thread toolpath. Enter a thread mill Ø in the Starts · Pitch · Lead panel to compute (blank until then). Other CAM software may differ.">Fusion PDO (Ø)</span><output id="ext-pdo">—</output></div>
               </div>
             </div>
             <div class="taper-only">
@@ -74,7 +74,7 @@
                 <div><span>Crest radius</span><output id="tp-rad-crest">—</output></div>
                 <div><span>Root radius</span><output id="tp-rad-root">—</output></div>
                 <div><span>Height (mean)</span><output id="tp-height">—</output></div>
-                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="tp-ext-pdo">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset for Autodesk Fusion's Thread toolpath. Enter a thread mill Ø in the Starts · Pitch · Lead panel to compute (blank until then). Other CAM software may differ.">Fusion PDO (Ø)</span><output id="tp-ext-pdo">—</output></div>
                 <div><span>Taper angle</span><output id="tp-taper-angle">—</output></div>
                 <div><span>Thread angle</span><output id="tp-thread-angle">—</output></div>
               </div>
@@ -95,7 +95,7 @@
               <div class="mini-grid">
                 <div><span>Flat at root</span><output id="int-flat">—</output></div>
                 <div><span>Height (basic)</span><output id="int-height">—</output></div>
-                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="int-pdo">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset for Autodesk Fusion's Thread toolpath. Enter a thread mill Ø in the Starts · Pitch · Lead panel to compute (blank until then). Other CAM software may differ.">Fusion PDO (Ø)</span><output id="int-pdo">—</output></div>
               </div>
             </div>
             <div class="taper-only">
@@ -109,7 +109,7 @@
                 <div><span>Pitch (gage notch)</span><output id="tp-ipd-gage">—</output></div>
                 <div><span>Tap drill</span><output id="tp-tapdrill">—</output></div>
                 <div><span>Tap depth (ref)</span><output id="tp-tapdepth">—</output></div>
-                <div><span class="pdo-name" title="Diametric offset (= major − minor) for Autodesk Fusion's Thread toolpath. Baseline for an ideal, correctly-sized thread mill — fine-tune for your tool and fit. Other CAM software may differ.">Fusion PDO (Ø)</span><output id="tp-int-pdo">—</output></div>
+                <div><span class="pdo-name" title="Diametric offset for Autodesk Fusion's Thread toolpath. Enter a thread mill Ø in the Starts · Pitch · Lead panel to compute (blank until then). Other CAM software may differ.">Fusion PDO (Ø)</span><output id="tp-int-pdo">—</output></div>
               </div>
             </div>
           </section>
@@ -182,12 +182,13 @@
             <div class="field"><span id="angleLabel">Lead angle</span><output id="o-leadangle">—</output></div>
           </div>
           <label class="field"><span>Length of engagement</span><input id="loe" type="number" step="any" placeholder="default = major dia" /></label>
-          <h3 class="subhead">Thread Mill · Fusion PDO<span class="help-wrap" tabindex="0" role="button" aria-label="About Fusion PDO"><span class="help-btn" aria-hidden="true">?</span><span class="help-pop" role="tooltip"><strong>Fusion PDO (Ø)</strong> — a <em>diametric</em> offset (not radial) for Autodesk Fusion's <em>Thread</em> toolpath. Blank tool = ideal-tool baseline (= major − minor). Enter a thread mill Ø to tool-adjust it (NYC CNC method): external 1.4·base − √3·c, internal 1.2·base − √3·c, where the tip flat <em>c</em> is your measured value or an estimate of Ø ÷ 100. A starting value — verify fit on a test cut; other CAM may differ. Method after <a href="https://saundersmachineworks.com/blogs/nyc-cnc/threadmilling-tips-tricks" target="_blank" rel="noopener">Saunders&nbsp;Machine&nbsp;Works / NYC&nbsp;CNC</a>.</span></span></h3>
+          <h3 class="subhead">Thread Mill · Fusion PDO<span class="help-wrap" tabindex="0" role="button" aria-label="About Fusion PDO"><span class="help-btn" aria-hidden="true">?</span><span class="help-pop" role="tooltip"><strong>Fusion PDO (Ø)</strong> — a <em>diametric</em> offset (not radial) for Autodesk Fusion's <em>Thread</em> toolpath. Enter a thread mill Ø here to compute it (blank until then); values are per the NYC CNC method: external 1.4·base − √3·c, internal 1.2·base − √3·c, where base = major − minor and the tip flat <em>c</em> is your measured value or an estimate of Ø ÷ 100. A starting value — verify fit on a test cut; other CAM may differ. Method after <a href="https://saundersmachineworks.com/blogs/nyc-cnc/threadmilling-tips-tricks" target="_blank" rel="noopener">Saunders&nbsp;Machine&nbsp;Works / NYC&nbsp;CNC</a>.</span></span></h3>
           <div class="custom-grid">
             <label class="field"><span>Thread mill Ø</span><input id="tmDia" type="number" step="any" placeholder="optional" /></label>
             <label class="field"><span>Tip flat</span><input id="tmFlat" type="number" step="any" placeholder="measured — else Ø ÷ 100" /></label>
           </div>
           <div class="mini-grid"><div><span>Tip flat used</span><output id="tm-flat-used">—</output></div></div>
+          <p class="tm-warn hidden" id="tm-warn"></p>
         </section>
 
         <section class="panel result std-only" id="panel-tap">
