@@ -220,8 +220,8 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
   margin: 5px 0;
 }
 .dim-name { font-weight: 600; font-size: 12px; }
-/* Allowance label sits immediately left of its box (right-justified), even on wide screens. */
-#panel-external .dim-row { justify-content: flex-end; gap: 10px; }
+/* Allowance label sits immediately left of its box, centered to match the dimension table. */
+#panel-external .dim-row { justify-content: center; gap: 10px; }
 .dim-row output {
   background: var(--value-bg);
   border: 1px solid var(--value-border);
@@ -234,7 +234,7 @@ input[type="number"], input[type="text"] { background: var(--input-bg); }
 
 /* Auto-width, centered: keeps each row's label immediately next to its value cells
    instead of stretching them apart across a full-width table. */
-.dim-table { width: auto; max-width: 100%; border-collapse: separate; border-spacing: 2px; margin: 8px 0; }
+.dim-table { width: auto; max-width: 100%; border-collapse: separate; border-spacing: 2px; margin: 8px auto; }
 .dim-table th, .dim-table td {
   padding: 4px 8px;
   text-align: right;

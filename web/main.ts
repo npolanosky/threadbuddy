@@ -190,6 +190,12 @@ function syncDisplayUnitInputs(): void {
   }
   lastDisplayUnit = now;
 }
+// Spinner step for the thread-mill fields: fine enough that an accidental scroll-wheel tick is small.
+function setToolStep(): void {
+  const step = displayUnits() === "metric" ? "0.05" : "0.01";
+  $<HTMLInputElement>("tmDia").step = step;
+  $<HTMLInputElement>("tmFlat").step = step;
+}
 function fmt(v: number | undefined): string {
   if (v === undefined || !Number.isFinite(v)) return "—";
   return conv(v).toFixed(displayUnits() === "metric" ? 3 : 4);
@@ -205,7 +211,7 @@ const setText = (id: string, t: string): void => { $(id).textContent = t; };
 const EXTERNAL_FIELD_IDS = [
   "desig-ext", "ext-allow", "ext-maj-max", "ext-maj-min", "ext-maj-mean", "ext-maj-tol",
   "ext-pd-max", "ext-pd-min", "ext-pd-mean", "ext-pd-tol", "ext-min-max", "ext-min-min",
-  "ext-min-mean", "ext-flat", "ext-rr-max", "ext-rr-min", "ext-height", "ext-pdo",
+  "ext-min-mean", "ext-flat", "ext-rr-max", "ext-rr-min", "ext-height",
 ];
 const WIRE_FIELD_IDS = ["mow-max", "mow-min", "wire-best", "wire-max", "wire-min", "wire-const"];
 const blankFields = (ids: string[]): void => ids.forEach((id) => setText(id, "—"));
@@ -238,6 +244,10 @@ function fusionPdo(
 function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: ThreadResult): void {
   const tc = toolCrest();
   setText("tm-flat-used", tc ? `${fmt(tc.crest)} ${tc.source === "estimated" ? "(est)" : "(meas)"}` : "—");
+  // Fusion PDO lives with the thread-mill inputs. threadHeight = heightMean for taper, so this covers
+  // std and taper families uniformly; STI has no external member (rExt null) so its Ext. PDO stays "—".
+  setText("tm-pdo-ext", fmt(rExt ? fusionPdo(rExt.threadHeight, "external", tc) : undefined));
+  setText("tm-pdo-int", fmt(rInt ? fusionPdo(rInt.threadHeight, "internal", tc) : undefined));
   // Fit check: an internal thread mill must be smaller than the drilled (minor) hole to fit.
   const toolDiaN = convToNative(parseFloat($<HTMLInputElement>("tmDia").value));
   const holeMinor = rInt?.minorDiameter.internal?.min;
@@ -266,7 +276,6 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("ext-rr-max", fmt(rExt.rootRadius?.max));
     setText("ext-rr-min", fmt(rExt.rootRadius?.min));
     setText("ext-height", fmt(rExt.threadHeight));
-    setText("ext-pdo", fmt(fusionPdo(rExt.threadHeight, "external", tc)));
   } else {
     blankFields(EXTERNAL_FIELD_IDS);
   }
@@ -301,7 +310,6 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("int-maj-max", fmt(rInt.majorDiameter.internal?.max));
     setText("int-flat", fmt(rInt.flatAtRoot?.internal));
     setText("int-height", fmt(rInt.threadHeight));
-    setText("int-pdo", fmt(fusionPdo(rInt.threadHeight, "internal", tc)));
     renderTapDrill(rInt);
   }
   setText("o-pitch", fmt(src.pitch));
@@ -367,10 +375,6 @@ function renderTaper(t: NonNullable<ThreadResult["taper"]>): void {
   setText("tp-rad-crest", t.radii ? fmt(t.radii.crest.max) : "—");
   setText("tp-rad-root", t.radii ? fmt(t.radii.root.max) : "—");
   setText("tp-height", fmt(t.heightMean));
-  // Diametric Fusion PDO for taper pipe, tool-adjusted like the standard families.
-  const tc = toolCrest();
-  setText("tp-ext-pdo", fmt(fusionPdo(t.heightMean, "external", tc)));
-  setText("tp-int-pdo", fmt(fusionPdo(t.heightMean, "internal", tc)));
   setText("tp-imin-l1", fmt(t.internal.minor.pipeEndL1));
   setText("tp-imin-face", fmt(t.internal.minor.pipeFace));
   setText("tp-ipd-gage", fmt(t.internal.pitchGageNotch));
@@ -523,6 +527,7 @@ function onFamilyChange(): void {
   populateClasses();
   populateSizes();
   syncDisplayUnitInputs(); // family switch also flips the display unit to the family's native unit
+  setToolStep();
   recompute();
 }
 
@@ -538,12 +543,17 @@ function init(): void {
   ["major", "tpi", "pitch", "starts", "loe", "percent", "altWire", "coatThk", "coatTol", "tmDia", "tmFlat"].forEach((id) =>
     $(id).addEventListener("input", () => {
       if (["major", "tpi", "pitch"].includes(id)) $<HTMLSelectElement>("size").value = "custom";
+      // Thread-mill Ø / tip flat can't be negative.
+      if (id === "tmDia" || id === "tmFlat") {
+        const el = $<HTMLInputElement>(id);
+        if (parseFloat(el.value) < 0) el.value = "";
+      }
       recompute();
     }));
   ["classExternal", "classInternal"].forEach((id) => $(id).addEventListener("change", recompute));
   // Units toggle rescales the display-unit inputs before recomputing so tools/wires keep their size.
   document.querySelectorAll('input[name="units"]')
-    .forEach((el) => el.addEventListener("change", () => { syncDisplayUnitInputs(); recompute(); }));
+    .forEach((el) => el.addEventListener("change", () => { syncDisplayUnitInputs(); setToolStep(); recompute(); }));
   document.querySelectorAll('input[name="anglename"],input[name="tapType"],input[name="coatMode"],input[name="coatHand"],#sharpRoot,#useCoating')
     .forEach((el) => el.addEventListener("change", recompute));
   $("resetWire").addEventListener("click", () => { $<HTMLInputElement>("altWire").value = ""; $<HTMLInputElement>("useCoating").checked = false; recompute(); });
