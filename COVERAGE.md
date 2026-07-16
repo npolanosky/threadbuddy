@@ -52,8 +52,9 @@ limits) with a user alternate wire that updates the main MOW; starts / pitch / l
 lead-or-helix angle; length of engagement; tap drills with cut/form selection, a thread-percent
 target, and a nearest-standard-drill table; a coating/polishing panel (before/after, 4x rule, ±
 thickness tolerance band, internal/external); a Fusion PDO (Ø) field (diametric pitch-diameter
-offset = major − minor for Autodesk Fusion's Thread toolpath, shown per hand); inch or metric
-display; print; reset to default.
+offset for Autodesk Fusion's Thread toolpath, shown per hand — ideal-tool baseline = major − minor,
+or tool-adjusted by the NYC CNC method from a thread-mill Ø with an estimated or measured tip flat);
+inch or metric display; print; reset to default.
 
 Tapered pipe threads use a dedicated layout (pipe-face/gage-notch values, pipe diameter, flats and
 truncation, internal pipe-end-L1/pipe-face minor, gage-notch pitch, tap drill and reference depth,

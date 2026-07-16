@@ -192,8 +192,34 @@ const EXTERNAL_FIELD_IDS = [
 const WIRE_FIELD_IDS = ["mow-max", "mow-min", "wire-best", "wire-max", "wire-min", "wire-const"];
 const blankFields = (ids: string[]): void => ids.forEach((id) => setText(id, "—"));
 
+// ---- Fusion Pitch Diameter Offset (thread milling) ----
+// Diametric offset for Autodesk Fusion's Thread toolpath. The ideal-tool baseline is
+// major − minor = 2 × radial thread height. With a real thread mill, the NYC CNC / Saunders
+// method corrects for the tool's crest ("tip flat" c):  external 1.4·base − √3·c ;
+// internal 1.2·base − √3·c (model at the drilled minor). The tip flat is measured, or estimated
+// as Ø ÷ 100 (their rule of thumb for cutters up to 0.5"; ≈ the best fit to their tool data).
+function toolCrest(): { crest: number; source: "measured" | "estimated" } | null {
+  const measured = convToNative(parseFloat($<HTMLInputElement>("tmFlat").value));
+  if (Number.isFinite(measured) && measured > 0) return { crest: measured, source: "measured" };
+  const dia = convToNative(parseFloat($<HTMLInputElement>("tmDia").value));
+  if (Number.isFinite(dia) && dia > 0) return { crest: dia / 100, source: "estimated" };
+  return null;
+}
+function fusionPdo(
+  radialHeight: number,
+  hand: "external" | "internal",
+  tc: ReturnType<typeof toolCrest>,
+): number {
+  const base = 2 * radialHeight;
+  if (!tc) return base;
+  const mult = hand === "external" ? 1.4 : 1.2;
+  return mult * base - Math.sqrt(3) * tc.crest;
+}
+
 // ---- Render ----
 function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: ThreadResult): void {
+  const tc = toolCrest();
+  setText("tm-flat-used", tc ? `${fmt(tc.crest)} ${tc.source === "estimated" ? "(est)" : "(meas)"}` : "—");
   if (rExt) {
     setText("desig-ext", rExt.designation);
     setText("ext-allow", fmt(rExt.allowance));
@@ -212,8 +238,7 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("ext-rr-max", fmt(rExt.rootRadius?.max));
     setText("ext-rr-min", fmt(rExt.rootRadius?.min));
     setText("ext-height", fmt(rExt.threadHeight));
-    // Fusion Thread-toolpath pitch-diameter offset: diametric full thread depth = 2 × radial height.
-    setText("ext-pdo", fmt(2 * rExt.threadHeight));
+    setText("ext-pdo", fmt(fusionPdo(rExt.threadHeight, "external", tc)));
   } else {
     blankFields(EXTERNAL_FIELD_IDS);
   }
@@ -248,7 +273,7 @@ function render(rExt: ThreadResult | null, rInt: ThreadResult | null, src: Threa
     setText("int-maj-max", fmt(rInt.majorDiameter.internal?.max));
     setText("int-flat", fmt(rInt.flatAtRoot?.internal));
     setText("int-height", fmt(rInt.threadHeight));
-    setText("int-pdo", fmt(2 * rInt.threadHeight));
+    setText("int-pdo", fmt(fusionPdo(rInt.threadHeight, "internal", tc)));
     renderTapDrill(rInt);
   }
   setText("o-pitch", fmt(src.pitch));
@@ -314,9 +339,10 @@ function renderTaper(t: NonNullable<ThreadResult["taper"]>): void {
   setText("tp-rad-crest", t.radii ? fmt(t.radii.crest.max) : "—");
   setText("tp-rad-root", t.radii ? fmt(t.radii.root.max) : "—");
   setText("tp-height", fmt(t.heightMean));
-  // Diametric Fusion PDO for taper pipe = 2 × the (mean) radial thread height.
-  setText("tp-ext-pdo", fmt(2 * t.heightMean));
-  setText("tp-int-pdo", fmt(2 * t.heightMean));
+  // Diametric Fusion PDO for taper pipe, tool-adjusted like the standard families.
+  const tc = toolCrest();
+  setText("tp-ext-pdo", fmt(fusionPdo(t.heightMean, "external", tc)));
+  setText("tp-int-pdo", fmt(fusionPdo(t.heightMean, "internal", tc)));
   setText("tp-imin-l1", fmt(t.internal.minor.pipeEndL1));
   setText("tp-imin-face", fmt(t.internal.minor.pipeFace));
   setText("tp-ipd-gage", fmt(t.internal.pitchGageNotch));
@@ -444,6 +470,8 @@ function resetToDefaults(): void {
   $<HTMLInputElement>("altWire").value = "";
   $<HTMLInputElement>("coatThk").value = "";
   $<HTMLInputElement>("coatTol").value = "";
+  $<HTMLInputElement>("tmDia").value = "";
+  $<HTMLInputElement>("tmFlat").value = "";
   $<HTMLInputElement>("sharpRoot").checked = false;
   $<HTMLInputElement>("useCoating").checked = false;
   const pick = (name: string, val: string): void => {
@@ -478,7 +506,7 @@ function init(): void {
     if (v !== "custom") applySize(currentSizes()[parseInt(v, 10)]);
     recompute();
   });
-  ["major", "tpi", "pitch", "starts", "loe", "percent", "altWire", "coatThk", "coatTol"].forEach((id) =>
+  ["major", "tpi", "pitch", "starts", "loe", "percent", "altWire", "coatThk", "coatTol", "tmDia", "tmFlat"].forEach((id) =>
     $(id).addEventListener("input", () => {
       if (["major", "tpi", "pitch"].includes(id)) $<HTMLSelectElement>("size").value = "custom";
       recompute();
@@ -487,6 +515,7 @@ function init(): void {
   document.querySelectorAll('input[name="units"],input[name="anglename"],input[name="tapType"],input[name="coatMode"],input[name="coatHand"],#sharpRoot,#useCoating')
     .forEach((el) => el.addEventListener("change", recompute));
   $("resetWire").addEventListener("click", () => { $<HTMLInputElement>("altWire").value = ""; $<HTMLInputElement>("useCoating").checked = false; recompute(); });
+  $("resetTm").addEventListener("click", () => { $<HTMLInputElement>("tmDia").value = ""; $<HTMLInputElement>("tmFlat").value = ""; recompute(); });
   $("resetAll").addEventListener("click", resetToDefaults);
   $("printBtn").addEventListener("click", () => window.print());
 

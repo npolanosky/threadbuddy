@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="./favicon-48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
     <link rel="apple-touch-icon" href="./icon-192.png" />
-    <script type="module" crossorigin src="./assets/index-Bomgnx3k.js"></script>
+    <script type="module" crossorigin src="./assets/index-CfCkd4aj.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-A7hZSKBU.css">
   </head>
   <body>
@@ -151,6 +151,19 @@
             <label class="check"><input type="checkbox" id="useCoating" /> Use coating/polish</label>
             <button id="resetWire" type="button" class="btn small">Reset wire</button>
           </section>
+
+          <section class="panel result" id="panel-tm">
+            <h2>Thread Mill (Fusion PDO)</h2>
+            <label class="field"><span>Thread mill Ø</span><input id="tmDia" type="number" step="any" placeholder="optional" /></label>
+            <label class="field"><span>Tip flat (measured)</span><input id="tmFlat" type="number" step="any" placeholder="override — est ≈ Ø ÷ 100" /></label>
+            <div class="mini-grid">
+              <div><span>Tip flat used</span><output id="tm-flat-used">—</output></div>
+            </div>
+            <button id="resetTm" type="button" class="btn small">Reset tool</button>
+            <p class="src">Enter your thread mill Ø to tool-adjust the <strong>Fusion PDO (Ø)</strong> values.
+              Tip flat is estimated as Ø ÷ 100 (NYC CNC rule of thumb, ≤ 0.5″ cutters); enter a measured
+              flat to override. Leave blank for the ideal-tool baseline (= major − minor).</p>
+          </section>
         </div>
       </div>
 
@@ -225,10 +238,12 @@
           <ul id="notes"></ul>
           <p class="src" id="standard-src">—</p>
           <p class="src" id="pdo-note">
-            <strong>Fusion PDO (Ø)</strong> is a <em>diametric</em> offset (= major − minor, not radial) for
-            Autodesk&nbsp;Fusion's <em>Thread</em> toolpath. It is a starting value assuming an ideal,
-            correctly-sized thread mill; fine-tune for your tool's crest flat/point and desired fit. Other
-            CAM software may operate differently. Method after
+            <strong>Fusion PDO (Ø)</strong> is a <em>diametric</em> offset (not radial) for Autodesk&nbsp;Fusion's
+            <em>Thread</em> toolpath. With no tool entered it shows the ideal-tool baseline (= major − minor).
+            Enter a <em>Thread mill Ø</em> (left) to tool-adjust it by the NYC&nbsp;CNC method — external
+            1.4·base − √3·c, internal 1.2·base − √3·c, where the tip flat <em>c</em> is your measured value or
+            an estimate of Ø ÷ 100. Always a starting value — verify fit on a test cut. Other CAM software may
+            operate differently. Method after
             <a href="https://saundersmachineworks.com/blogs/nyc-cnc/threadmilling-tips-tricks" target="_blank" rel="noopener">Saunders Machine Works / NYC&nbsp;CNC</a>.
           </p>
           <p class="src ack">
